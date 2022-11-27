@@ -10,7 +10,9 @@ namespace GameEngine {
             m_WindowWidth(WindowWidth),
             m_WindowHeight(WindowHeight)
     {
-        LoadScene(DefaultSceneName);
+        m_CurrentSceneName = DefaultSceneName;
+        m_SceneNameToLoad = DefaultSceneName;
+        ExecuteLoadScene();
     }
 
     template<typename SceneNameEnum>

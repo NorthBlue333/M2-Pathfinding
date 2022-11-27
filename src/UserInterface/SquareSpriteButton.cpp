@@ -64,9 +64,9 @@ namespace UI {
     void SquareSpriteButton::SetAllPositions(float x, float y) {
         m_Border.setPosition(x, y);
         auto BorderBounds = m_Border.getGlobalBounds();
-        m_Sprite.setPosition(Utilities::PositionUtilities::GetXCenterPosition(BorderBounds, m_Sprite.getGlobalBounds()),
+        m_Sprite.setPosition(Utilities::GetXCenterPosition(BorderBounds, m_Sprite.getGlobalBounds()),
                              BorderBounds.top + BORDER_THICKNESS + 10);
-        m_Name.setPosition(Utilities::PositionUtilities::GetXCenterPosition(BorderBounds, m_Name.getGlobalBounds()),
+        m_Name.setPosition(Utilities::GetXCenterPosition(BorderBounds, m_Name.getGlobalBounds()),
                            BorderBounds.top + BorderBounds.height - m_Name.getGlobalBounds().height - BORDER_THICKNESS - 10);
     }
 

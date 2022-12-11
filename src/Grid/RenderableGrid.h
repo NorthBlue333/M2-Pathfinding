@@ -8,9 +8,9 @@
 #include <SFML/Graphics.hpp>
 
 namespace Grid {
-    template <typename NodeType>
-    struct RenderableNode : public NodeType {
-        using NodeType::NodeType;
+    template <template <typename NodeType, template <typename NT> typename DataHolderNodeType> typename GridNodeType, template <typename NodeType> typename DataHolderType>
+    struct RenderableNode : public GridNodeType<RenderableNode<GridNodeType, DataHolderType>, DataHolderType> {
+        using GridNodeType<RenderableNode<GridNodeType, DataHolderType>, DataHolderType>::GridNodeType;
 
         void Render(sf::RenderWindow *Window);
     };
@@ -24,14 +24,14 @@ namespace Grid {
         unsigned int Height = 0.f;
     };
 
-    template<typename GridType, typename DataHolderNodeType>
+    template<typename GridType, typename GridNodeType, template <typename NodeType> typename DataHolderNodeType>
     class RenderableGrid : public GridType {
     public:
         void CreateNodes(
                 unsigned int& Width,
                 unsigned int& Height,
                 const RenderableSize2D& ContainerSize,
-                std::function<DataHolderNodeType*(const RenderableCoordinates2D& RenderCoordinates, const RenderableSize2D& RenderSize)> CreateDataHolderNode = [](const RenderableCoordinates2D&, const RenderableSize2D&) {return nullptr;}
+                std::function<DataHolderNodeType<GridNodeType>*(GridNodeType* GridNode, const RenderableCoordinates2D& RenderCoordinates, const RenderableSize2D& RenderSize)> CreateDataHolderNode = [](const RenderableCoordinates2D&, const RenderableSize2D&) {return nullptr;}
         );
 
         virtual RenderableSize2D GetNodeRenderSize(const RenderableSize2D& ContainerSize) const = 0;

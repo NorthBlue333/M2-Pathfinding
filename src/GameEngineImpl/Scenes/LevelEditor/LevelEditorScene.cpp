@@ -113,11 +113,11 @@ namespace GameEngineImpl::Scenes {
     LevelEditorScene::NodeTypeButton* LevelEditorScene::AddButton(
             const sf::Texture *Texture,
             const sf::String &Name,
-            LevelEditorScene::GridDataHolder::NodeType NodeType
+            GridImpl::NodeType NodeType
     ) {
         auto newButton = new LevelEditorScene::NodeTypeButton(Texture, Name, *m_Fonts.at(LevelEditorFont::AnekDevanagari), BUTTON_WIDTH, BUTTON_HEIGHT, 14.f);
         auto WindowSize = m_Game->GetWindow()->getSize();
-        newButton->NodeType = NodeType;
+        newButton->TargetNodeType = NodeType;
         newButton->SetOnClick([this](auto && Btn) {
             if (m_CurrentNodeTypeButton != nullptr) {
                 m_CurrentNodeTypeButton->ToggleActive(false);
@@ -135,6 +135,40 @@ namespace GameEngineImpl::Scenes {
         return newButton;
     }
 
+    LevelEditorScene::HexagonalGridType::DataHolder_T *LevelEditorScene::CreateHexagonalGridDataHolder(
+            HexagonalGridType::GridNode_T * GridNode,
+            const Grid::RenderableCoordinates2D& RenderCoordinates,
+            const Grid::RenderableSize2D& RenderSize
+    ) {
+        std::map<GridImpl::NodeType, sf::Texture*> Textures = {
+                {GridImpl::NodeType::Empty, m_Textures.at(LevelEditorTextureName::OutlinedHexagon)},
+                {GridImpl::NodeType::Plain, m_Textures.at(LevelEditorTextureName::FilledHexagon)},
+                {GridImpl::NodeType::Portal, m_Textures.at(LevelEditorTextureName::PortalHexagon)},
+        };
+        return FillGridDataHolder<LevelEditorScene::HexagonalGridType::DataHolder_T>(
+                Textures,
+                RenderCoordinates,
+                RenderSize
+        );
+    }
+
+    LevelEditorScene::SquareGridType::DataHolder_T *LevelEditorScene::CreateSquareGridDataHolder(
+            SquareGridType::GridNode_T * GridNode,
+            const Grid::RenderableCoordinates2D& RenderCoordinates,
+            const Grid::RenderableSize2D& RenderSize
+    ) {
+        std::map<GridImpl::NodeType, sf::Texture*> Textures = {
+                {GridImpl::NodeType::Empty, m_Textures.at(LevelEditorTextureName::OutlinedSquare)},
+                {GridImpl::NodeType::Plain, m_Textures.at(LevelEditorTextureName::FilledSquare)},
+                {GridImpl::NodeType::Portal, m_Textures.at(LevelEditorTextureName::PortalSquare)},
+        };
+        return FillGridDataHolder<LevelEditorScene::SquareGridType::DataHolder_T>(
+                Textures,
+                RenderCoordinates,
+                RenderSize
+        );
+    }
+
     void LevelEditorScene::CreateGrid() {
         // @todo maybe we could generate automatically these ifs but not sure / factory
         const auto WindowSize = m_Game->GetWindow()->getSize();
@@ -149,112 +183,20 @@ namespace GameEngineImpl::Scenes {
                 GridWidth,
                 GridHeight,
                 {ContainerWidth, ContainerHeight},
-                [this](const Grid::RenderableCoordinates2D& RenderCoordinates, const Grid::RenderableSize2D& RenderSize) {return CreateSquareGridDataHolder(RenderCoordinates, RenderSize);}
+                [this](SquareGridType::GridNode_T * GridNode, const Grid::RenderableCoordinates2D& RenderCoordinates, const Grid::RenderableSize2D& RenderSize) {
+                    return CreateSquareGridDataHolder(GridNode, RenderCoordinates, RenderSize);
+                }
             );
         } else if (m_CurrentGridType == LevelEditorGridType::Hexagonal) {
             m_Grid.HexagonalGrid = new HexagonalGridType(
                 GridWidth,
                 GridHeight,
                 {ContainerWidth, ContainerHeight},
-                [this](const Grid::RenderableCoordinates2D& RenderCoordinates, const Grid::RenderableSize2D& RenderSize) {return CreateHexagonalGridDataHolder(RenderCoordinates, RenderSize);}
+                [this](HexagonalGridType::GridNode_T * GridNode, const Grid::RenderableCoordinates2D& RenderCoordinates, const Grid::RenderableSize2D& RenderSize) {
+                    return CreateHexagonalGridDataHolder(GridNode, RenderCoordinates, RenderSize);
+                }
             );
         }
-    }
-
-    LevelEditorScene::GridDataHolder *LevelEditorScene::CreateHexagonalGridDataHolder(
-        const Grid::RenderableCoordinates2D& RenderCoordinates,
-        const Grid::RenderableSize2D& RenderSize
-    ) {
-        std::map<GridDataHolder::NodeType, sf::Texture*> Textures = {
-                {GridDataHolder::NodeType::Empty, m_Textures.at(LevelEditorTextureName::OutlinedHexagon)},
-                {GridDataHolder::NodeType::Plain, m_Textures.at(LevelEditorTextureName::FilledHexagon)},
-                {GridDataHolder::NodeType::Portal, m_Textures.at(LevelEditorTextureName::PortalHexagon)},
-        };
-        return CreateGridDataHolder(Textures, RenderCoordinates, RenderSize);
-    }
-
-    LevelEditorScene::GridDataHolder *LevelEditorScene::CreateSquareGridDataHolder(
-        const Grid::RenderableCoordinates2D& RenderCoordinates,
-        const Grid::RenderableSize2D& RenderSize
-    ) {
-        std::map<GridDataHolder::NodeType, sf::Texture*> Textures = {
-                {GridDataHolder::NodeType::Empty, m_Textures.at(LevelEditorTextureName::OutlinedSquare)},
-                {GridDataHolder::NodeType::Plain, m_Textures.at(LevelEditorTextureName::FilledSquare)},
-                {GridDataHolder::NodeType::Portal, m_Textures.at(LevelEditorTextureName::PortalSquare)},
-        };
-        return CreateGridDataHolder(
-            Textures,
-            RenderCoordinates,
-            RenderSize
-        );
-    }
-
-    LevelEditorScene::GridDataHolder *LevelEditorScene::CreateGridDataHolder(
-        std::map<GridDataHolder::NodeType, sf::Texture *> &Textures,
-        const Grid::RenderableCoordinates2D& RenderCoordinates,
-        const Grid::RenderableSize2D& RenderSize
-    ) {
-        auto DataHolder = new GridDataHolder(nullptr);
-        auto NewBtn = new GridNodeButton(
-                Textures.at(GridDataHolder::NodeType::Empty),
-                RenderSize.Width,
-                RenderSize.Height
-        );
-        NewBtn->SetPosition(BUTTON_MARGIN + RenderCoordinates.X, 50 + RenderCoordinates.Y);
-        NewBtn->SetOnClick([this](auto && Btn) {
-            // @todo extract to method
-            if (nullptr == m_CurrentNodeTypeButton)
-                return;
-
-            auto CastedBtn = static_cast<GridNodeButton*>(Btn);
-            if (nullptr == CastedBtn->DataHolder)
-                return;
-            CastedBtn->DataHolder->SetCurrentNodeType(m_CurrentNodeTypeButton->NodeType);
-            if (nullptr == m_LastPortal && m_CurrentNodeTypeButton->NodeType == GridDataHolder::NodeType::Portal) {
-                m_LastPortal = CastedBtn->DataHolder;
-                return;
-            }
-            if (nullptr != m_LastPortal) {
-                if (m_CurrentNodeTypeButton->NodeType == GridDataHolder::NodeType::Portal) {
-                    m_LastPortal->SetLinkedPortal(CastedBtn->DataHolder);
-                    m_LastPortal = nullptr;
-                } else {
-                    m_LastPortal->SetCurrentNodeType(GridDataHolder::NodeType::Empty);
-                    m_LastPortal = nullptr;
-                }
-            }
-        });
-        NewBtn->SetOnHover(
-            [this](auto && Btn) {
-                auto CastedBtn = static_cast<GridNodeButton*>(Btn);
-                if (
-                        nullptr == CastedBtn->DataHolder
-                        || CastedBtn->DataHolder->GetCurrentNodeType() != GridDataHolder::NodeType::Portal
-                        || nullptr == CastedBtn->DataHolder->GetLinkedPortal()
-                )
-                    return;
-
-                CastedBtn->ShowOverlay();
-                CastedBtn->DataHolder->GetLinkedPortal()->GetGridNodeButton()->ShowOverlay();
-            },
-            [this](auto && Btn) {
-                auto CastedBtn = static_cast<GridNodeButton*>(Btn);
-                CastedBtn->HideOverlay();
-
-                if (
-                    nullptr == CastedBtn->DataHolder
-                    || CastedBtn->DataHolder->GetCurrentNodeType() != GridDataHolder::NodeType::Portal
-                    || nullptr == CastedBtn->DataHolder->GetLinkedPortal()
-                )
-                    return;
-
-                CastedBtn->DataHolder->GetLinkedPortal()->GetGridNodeButton()->HideOverlay();
-            }
-        );
-        NewBtn->DataHolder = DataHolder;
-        DataHolder->SetGridNodeButton(NewBtn);
-        DataHolder->SetTextures(Textures);
-        return DataHolder;
     }
 
     void LevelEditorScene::SetCurrentGridType(LevelEditorGridType NewGridType) {
@@ -264,13 +206,13 @@ namespace GameEngineImpl::Scenes {
         ResetNodeTypeButtons();
 
         if (m_CurrentGridType == LevelEditorGridType::Square) {
-            AddButton(m_Textures.at(LevelEditorTextureName::OutlinedSquare), "Empty", GridDataHolder::NodeType::Empty);
-            AddButton(m_Textures.at(LevelEditorTextureName::FilledSquare), "Plain", GridDataHolder::NodeType::Plain);
-            AddButton(m_Textures.at(LevelEditorTextureName::PortalSquare), "Portal", GridDataHolder::NodeType::Portal);
+            AddButton(m_Textures.at(LevelEditorTextureName::OutlinedSquare), "Empty", GridImpl::NodeType::Empty);
+            AddButton(m_Textures.at(LevelEditorTextureName::FilledSquare), "Plain", GridImpl::NodeType::Plain);
+            AddButton(m_Textures.at(LevelEditorTextureName::PortalSquare), "Portal", GridImpl::NodeType::Portal);
         } else if (m_CurrentGridType == LevelEditorGridType::Hexagonal) {
-            AddButton(m_Textures.at(LevelEditorTextureName::OutlinedHexagon), "Empty", GridDataHolder::NodeType::Empty);
-            AddButton(m_Textures.at(LevelEditorTextureName::FilledHexagon), "Plain", GridDataHolder::NodeType::Plain);
-            AddButton(m_Textures.at(LevelEditorTextureName::PortalHexagon), "Portal", GridDataHolder::NodeType::Portal);
+            AddButton(m_Textures.at(LevelEditorTextureName::OutlinedHexagon), "Empty", GridImpl::NodeType::Empty);
+            AddButton(m_Textures.at(LevelEditorTextureName::FilledHexagon), "Plain", GridImpl::NodeType::Plain);
+            AddButton(m_Textures.at(LevelEditorTextureName::PortalHexagon), "Portal", GridImpl::NodeType::Portal);
         }
     }
 
@@ -281,90 +223,5 @@ namespace GameEngineImpl::Scenes {
 
         m_EditorButtons = {};
         m_CurrentNodeTypeButton = nullptr;
-    }
-
-    void LevelEditorScene::GridDataHolder::Render(sf::RenderWindow *Window) {
-        m_GridNodeButton->Render(Window);
-    }
-
-    void
-    LevelEditorScene::GridDataHolder::SetCurrentNodeType(LevelEditorScene::GridDataHolder::NodeType NewType) {
-        if (CurrentNodeType == NewType)
-            return;
-        SetLinkedPortal(nullptr);
-        CurrentNodeType = NewType;
-        SetTextureFromNodeType();
-    }
-
-    const LevelEditorScene::GridDataHolder::NodeType &LevelEditorScene::GridDataHolder::GetCurrentNodeType() const {
-        return CurrentNodeType;
-    }
-
-    const LevelEditorScene::GridDataHolder* LevelEditorScene::GridDataHolder::GetLinkedPortal() const {
-        return LinkedPortal;
-    }
-
-    void LevelEditorScene::GridDataHolder::SetLinkedPortal(LevelEditorScene::GridDataHolder *Linked) {
-        if (CurrentNodeType != NodeType::Portal)
-            return;
-
-        if (LinkedPortal == Linked)
-            return;
-
-        auto OldPortal = LinkedPortal;
-        LinkedPortal = Linked;
-        if (nullptr != LinkedPortal)
-            LinkedPortal->LinkedPortal = this;
-
-        if (nullptr != OldPortal) {
-            OldPortal->SetCurrentNodeType(NodeType::Empty);
-        }
-    }
-
-    LevelEditorScene::GridDataHolder::~GridDataHolder()  {
-        SetLinkedPortal(nullptr);
-        delete m_GridNodeButton;
-    }
-
-    LevelEditorScene::GridNodeButton *LevelEditorScene::GridDataHolder::GetGridNodeButton() const {
-        return m_GridNodeButton;
-    }
-
-    void LevelEditorScene::GridDataHolder::SetGridNodeButton(LevelEditorScene::GridNodeButton *Btn) {
-        m_GridNodeButton = Btn;
-    }
-
-    void LevelEditorScene::GridDataHolder::SetTextureFromNodeType() {
-        m_GridNodeButton->SetTexture(Textures.at(CurrentNodeType));
-        m_GridNodeButton->HideOverlay();
-    }
-
-    void LevelEditorScene::GridDataHolder::SetTextures(std::map<NodeType, sf::Texture *> &NewTextures) {
-        Textures = NewTextures;
-    }
-
-    void LevelEditorScene::GridNodeButton::HideOverlay() {
-        delete Overlay;
-        Overlay = nullptr;
-    }
-
-    void LevelEditorScene::GridNodeButton::ShowOverlay() {
-        if (Overlay != nullptr)
-            return;
-        Overlay = new sf::RectangleShape({m_Width, m_Height});
-        Overlay->setFillColor({255, 0, 0, 100});
-        Overlay->setPosition(UI::GridNodeButton::GetPosition());
-    }
-
-    void LevelEditorScene::GridNodeButton::Render(sf::RenderWindow *Window) {
-        UI::GridNodeButton::Render(Window);
-        if (nullptr != Overlay) {
-            Window->draw(*Overlay);
-        }
-    }
-
-    LevelEditorScene::GridNodeButton::~GridNodeButton() {
-        delete Overlay;
-        Overlay = nullptr;
     }
 } // Scenes

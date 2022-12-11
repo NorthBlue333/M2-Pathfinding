@@ -47,7 +47,7 @@ add_executable(
         src/Grid/HexagonalGrid.tpp
         src/Grid/HexagonalGrid.h src/Grid/SquareGrid.h src/Grid/SquareGrid.tpp
         src/Grid/HexagonalGrid.cpp
-        src/UserInterface/GridNodeButton.h src/UserInterface/GridNodeButton.cpp)
+        src/UserInterface/GridNodeButton.h src/UserInterface/GridNodeButton.cpp src/PathFinding/Graph.cpp src/PathFinding/Graph.h src/PathFinding/GraphFactory.cpp src/PathFinding/GraphFactory.h src/PathFinding/Heuristic.h src/PathFinding/Node.cpp src/PathFinding/Node.h src/GameEngineImpl/Scenes/LevelEditor/LevelEditorScene.tpp src/GridImpl/GridsWithPortals.tpp src/GridImpl/GridsWithPortals.h src/GridImpl/GridWithPortals.cpp src/PathFinding/Algorithm.tpp src/PathFinding/Algorithm.h src/PathFinding/AStar.h)
 
 file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
 

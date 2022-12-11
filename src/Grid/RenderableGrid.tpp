@@ -1,17 +1,17 @@
 #include "RenderableGrid.h"
 
 namespace Grid {
-    template<typename NodeType>
-    void RenderableNode<NodeType>::Render(sf::RenderWindow *Window)  {
+    template <template <typename NodeType, template <typename NT> typename DataHolderNodeType> typename GridNodeType, template <typename NodeType> typename DataHolderType>
+    void RenderableNode<GridNodeType, DataHolderType>::Render(sf::RenderWindow *Window)  {
         this->DataHolder->Render(Window);
     }
 
-    template<typename GridType, typename DataHolderNodeType>
-    void RenderableGrid<GridType, DataHolderNodeType>::CreateNodes(
+    template<typename GridType, typename GridNodeType, template <typename NodeType> typename DataHolderNodeType>
+    void RenderableGrid<GridType, GridNodeType, DataHolderNodeType>::CreateNodes(
             unsigned int& Width,
             unsigned int& Height,
             const RenderableSize2D& ContainerSize,
-            std::function<DataHolderNodeType*(const RenderableCoordinates2D& RenderCoordinates, const RenderableSize2D& RenderSize)> CreateDataHolderNode
+            std::function<DataHolderNodeType<GridNodeType>*(GridNodeType* GridNode, const RenderableCoordinates2D& RenderCoordinates, const RenderableSize2D& RenderSize)> CreateDataHolderNode
     ) {
         this->m_Width = Width;
         this->m_Height = Height;
@@ -23,14 +23,18 @@ namespace Grid {
                 Coordinates2D Coordinates{X, Y};
                 this->m_Nodes.emplace_back(
                     Coordinates,
-                    CreateDataHolderNode(GetNodeRenderCoordinates(Coordinates, RenderSize), RenderSize)
+                    nullptr
                 );
+                auto LastEl = &this->m_Nodes.back();
+                LastEl->DataHolder = CreateDataHolderNode(LastEl, GetNodeRenderCoordinates(Coordinates, RenderSize), RenderSize);
             }
         }
+
+        this->GenerateNeighbors();
     }
 
-    template<typename GridType, typename DataHolderNodeType>
-    void RenderableGrid<GridType, DataHolderNodeType>::Render(sf::RenderWindow *Window) {
+    template<typename GridType, typename GridNodeType, template <typename NodeType> typename DataHolderNodeType>
+    void RenderableGrid<GridType, GridNodeType, DataHolderNodeType>::Render(sf::RenderWindow *Window) {
         for (auto &node : this->m_Nodes) {
             node.Render(Window);
         }

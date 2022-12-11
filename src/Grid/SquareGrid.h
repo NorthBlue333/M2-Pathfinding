@@ -5,39 +5,53 @@
 #include "RenderableGrid.h"
 
 namespace Grid {
-    template <typename DataHolderNodeType>
-    struct BaseSquareGridNode : public BaseGridNode<DataHolderNodeType> {
-        using BaseGridNode<DataHolderNodeType>::BaseGridNode;
+    template <typename BaseSquareGridNodeType, template <typename NodeType> typename DataHolderNodeType>
+    struct BaseSquareGridNode : public BaseGridNode<BaseSquareGridNodeType, DataHolderNodeType> {
+        using BaseGridNode<BaseSquareGridNodeType, DataHolderNodeType>::BaseGridNode;
     };
 
-    template <typename GridNodeType, typename DataHolderNodeType>
+    template <template <typename NodeType> typename DataHolderNodeType>
+    struct SquareGridNode : public BaseSquareGridNode<SquareGridNode<DataHolderNodeType>, DataHolderNodeType>
+    {
+        using BaseSquareGridNode<SquareGridNode<DataHolderNodeType>, DataHolderNodeType>::BaseSquareGridNode;
+    };
+
+    template <typename GridNodeType, template <typename NodeType> typename DataHolderNodeType>
     class BaseSquareGrid : public BaseGrid<GridNodeType, DataHolderNodeType>
     {
     public:
         BaseSquareGrid(
                 unsigned int& Width,
                 unsigned int& Height,
-                std::function<DataHolderNodeType*(const Coordinates2D& Coordinates)> CreateDataHolderNode = [](const Coordinates2D&) {return nullptr;}
-        ) : BaseGrid<GridNodeType, DataHolderNodeType>(Width, Height, CreateDataHolderNode) {};
+                std::function<DataHolderNodeType<GridNodeType>*(const Coordinates2D& Coordinates)> CreateDataHolderNode = [](const Coordinates2D&) {return nullptr;}
+        ) {
+            this->CreateNodes(Width, Height, CreateDataHolderNode);
+        };
+
+        std::vector<Coordinates2D> GetNeighborsCoordinates(Coordinates2D& Coordinates) override;
     protected:
         explicit BaseSquareGrid() = default;
     };
 
-    template <typename DataHolderNodeType>
-    using SquareGrid = BaseSquareGrid<BaseSquareGridNode<DataHolderNodeType>, DataHolderNodeType>;
+    template <template <typename NodeType> typename DataHolderNodeType>
+    using SquareGrid = BaseSquareGrid<SquareGridNode<DataHolderNodeType>, DataHolderNodeType>;
 
-    template <typename DataHolderNodeType>
-    using RenderableSquareGridNode = RenderableNode<BaseSquareGridNode<DataHolderNodeType>>;
+    template <template <typename NodeType> typename DataHolderNodeType>
+    using RenderableSquareGridNode = RenderableNode<BaseSquareGridNode, DataHolderNodeType>;
 
-    template <typename DataHolderNodeType>
-    class RenderableSquareGrid : public RenderableGrid<BaseSquareGrid<RenderableSquareGridNode<DataHolderNodeType>, DataHolderNodeType>, DataHolderNodeType>
+    template <template <typename NodeType> typename DataHolderNodeType>
+    class RenderableSquareGrid :
+            public RenderableGrid<BaseSquareGrid<RenderableSquareGridNode<DataHolderNodeType>, DataHolderNodeType>, RenderableSquareGridNode<DataHolderNodeType>, DataHolderNodeType>
     {
     public:
+        using GridNode_T = RenderableSquareGridNode<DataHolderNodeType>;
+        using DataHolder_T = DataHolderNodeType<GridNode_T>;
+
         RenderableSquareGrid(
                 unsigned int& Width,
                 unsigned int& Height,
                 const RenderableSize2D& ContainerSize,
-                std::function<DataHolderNodeType*(const RenderableCoordinates2D& RenderCoordinates, const RenderableSize2D& RenderSize)> CreateDataHolderNode = [](const RenderableCoordinates2D&, const RenderableSize2D&) {return nullptr;}
+                std::function<DataHolderNodeType<GridNode_T>*(GridNode_T* GridNode, const RenderableCoordinates2D& RenderCoordinates, const RenderableSize2D& RenderSize)> CreateDataHolderNode = [](const RenderableCoordinates2D&, const RenderableSize2D&) {return nullptr;}
         ) {
             this->CreateNodes(Width, Height, ContainerSize, CreateDataHolderNode);
         };

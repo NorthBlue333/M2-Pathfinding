@@ -37,7 +37,17 @@ add_executable(
         src/GameEngineImpl/Scenes/LevelEditor/LevelEditorGameController.h
         src/GameEngineImpl/Scenes/LevelEditor/LevelEditorGameMode.cpp
         src/GameEngineImpl/Scenes/LevelEditor/LevelEditorGameMode.h
-        src/UserInterface/TextButton.cpp src/UserInterface/TextButton.h src/UserInterface/TextButton.cpp src/UserInterface/TextButton.h src/UserInterface/SquareSpriteButton.cpp src/UserInterface/SquareSpriteButton.h src/Utilities/PositionUtilities.cpp src/Utilities/PositionUtilities.h)
+        src/UserInterface/TextButton.cpp
+        src/UserInterface/TextButton.h src/UserInterface/TextButton.cpp
+        src/UserInterface/TextButton.h src/UserInterface/SquareSpriteButton.cpp
+        src/UserInterface/SquareSpriteButton.h src/Utilities/PositionUtilities.cpp
+        src/Utilities/PositionUtilities.h src/GameEngineImpl/Scenes/Traits/HasTextures.tpp
+        src/GameEngineImpl/Scenes/Traits/HasTextures.h src/Grid/BaseGrid.tpp
+        src/Grid/BaseGrid.h src/Grid/RenderableGrid.h src/Grid/RenderableGrid.tpp
+        src/Grid/HexagonalGrid.tpp
+        src/Grid/HexagonalGrid.h src/Grid/SquareGrid.h src/Grid/SquareGrid.tpp
+        src/Grid/HexagonalGrid.cpp
+        src/UserInterface/GridNodeButton.h src/UserInterface/GridNodeButton.cpp)
 
 find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
 target_link_libraries(pathfinding PRIVATE sfml-system sfml-network sfml-graphics sfml-window)

@@ -21,7 +21,7 @@ namespace GameEngine {
 
     public:
         explicit BaseGameMode(Game<SceneNameEnum>* Game, SceneType* Scene);
-        virtual ~BaseGameMode() = default;
+        virtual ~BaseGameMode();
 
         void ComputeInputs();
     protected:

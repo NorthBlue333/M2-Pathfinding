@@ -5,47 +5,49 @@
 #include "../../common_types.h"
 #include "MainMenuGameMode.h"
 #include "../../../UserInterface/IButton.h"
+#include "../Traits/HasFonts.h"
 #include <vector>
 
-namespace GameEngineImpl {
-    namespace Scenes {
-        enum MainMenuState {
-            Main = 0,
-            LevelSelect,
-        };
+namespace GameEngineImpl::Scenes {
+    enum struct MainMenuState {
+        Main = 0,
+        LevelSelect,
+    };
 
-        class MainMenuScene : public BaseSceneType<MainMenuScene, MainMenuGameMode, MainMenuGameController> {
-        public:
-            explicit MainMenuScene(GameType* Game);
-            ~MainMenuScene() override;
+    enum struct MainMenuFont {
+        AnekDevanagari = 0,
+    };
 
-            void Load() override;
-            void ExecuteCalculations(sf::Time Elapsed) override;
-            void Render() override;
+    class MainMenuScene : public BaseSceneType<MainMenuScene, MainMenuGameMode, MainMenuGameController>, public Traits::HasFonts<MainMenuFont> {
+    public:
+        explicit MainMenuScene(GameType* Game);
+        ~MainMenuScene() override;
 
-            std::vector<UI::IButton*>& GetButtons();
-        protected:
-            MainMenuState m_CurrentState = MainMenuState::Main;
+        void Load() override;
+        void ExecuteCalculations(sf::Time Elapsed) override;
+        void Render() override;
 
-            static int constexpr TITLE_TEXT_SIZE = 30;
-            static int constexpr BUTTON_TEXT_SIZE = 30;
-            sf::Font* m_MainMenuFont;
+        std::vector<UI::IButton*>& GetButtons();
+    protected:
+        MainMenuState m_CurrentState = MainMenuState::Main;
 
-            sf::Text m_Title;
-            std::vector<UI::IButton*> m_Buttons;
+        static int constexpr TITLE_TEXT_SIZE = 30;
+        static int constexpr BUTTON_TEXT_SIZE = 30;
 
-            void SetTitle(const sf::String &Text);
-            void AddButton(
-                    const sf::String &Text,
-                    const UI::IButton::EventType& OnClick = nullptr
-            );
+        sf::Text m_Title;
+        std::vector<UI::IButton*> m_Buttons;
 
-            void ChangeCurrentState(MainMenuState NewState);
-            void ShowMainState();
-            void ShowLevelSelectState();
-        };
+        void SetTitle(const sf::String &Text);
+        void AddButton(
+                const sf::String &Text,
+                const UI::IButton::EventType& OnClick = nullptr
+        );
 
-    } // GameEngineImpl
+        void ChangeCurrentState(MainMenuState NewState);
+        void ShowMainState();
+        void ShowLevelSelectState();
+    };
+
 } // Scenes
 
 #endif //PATHFINDING_MAINMENUSCENE_H

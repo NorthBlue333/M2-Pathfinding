@@ -1,4 +1,3 @@
-#include <SFML/Graphics.hpp>
 #include "GameEngineImpl/common_types.h"
 #include "GameEngineImpl/Scenes/SceneFactory.h"
 

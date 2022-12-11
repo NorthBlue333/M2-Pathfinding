@@ -3,7 +3,7 @@
 #include <iostream>
 
 namespace GameEngineImpl::Scenes {
-        MainMenuScene::MainMenuScene(GameType *Game) : BaseScene(Game), m_MainMenuFont(nullptr), m_Title(sf::Text()) {
+        MainMenuScene::MainMenuScene(GameType *Game) : BaseScene(Game), m_Title(sf::Text()) {
 
         }
 
@@ -22,18 +22,20 @@ namespace GameEngineImpl::Scenes {
         void MainMenuScene::Load() {
             auto newFont = new sf::Font;
             newFont->loadFromFile("../assets/anek_devanagari/static/AnekDevanagari/AnekDevanagari-Bold.ttf");
-            m_MainMenuFont = newFont;
+            m_Fonts.insert({MainMenuFont::AnekDevanagari, newFont});
 
             // initial state
             ChangeCurrentState(m_CurrentState);
         }
 
         MainMenuScene::~MainMenuScene() {
-            delete m_MainMenuFont;
+            for (auto & Button : m_Buttons) {
+                delete Button;
+            }
         }
 
         void MainMenuScene::SetTitle(const sf::String &Text) {
-            m_Title = sf::Text(Text, *m_MainMenuFont, TITLE_TEXT_SIZE);
+            m_Title = sf::Text(Text, *m_Fonts.at(MainMenuFont::AnekDevanagari), TITLE_TEXT_SIZE);
             m_Title.setPosition(200, 30);
         }
 
@@ -42,7 +44,7 @@ namespace GameEngineImpl::Scenes {
                 const UI::TextButton::EventType& OnClick
         ) {
             auto YOffset = TITLE_TEXT_SIZE + 60 + (m_Buttons.size() * (BUTTON_TEXT_SIZE + 50));
-            auto NewButton = new UI::TextButton(Text, *m_MainMenuFont, BUTTON_TEXT_SIZE);
+            auto NewButton = new UI::TextButton(Text, *m_Fonts.at(MainMenuFont::AnekDevanagari), BUTTON_TEXT_SIZE);
             m_Buttons.push_back(NewButton);
             NewButton->SetPosition(30, YOffset);
 

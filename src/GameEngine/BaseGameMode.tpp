@@ -16,4 +16,9 @@ namespace GameEngine {
     BaseGameMode<SceneNameEnum, SceneType, GameModeType, GameControllerType>::InstanciateGameController() {
         return new GameControllerType(m_Game, m_Scene, static_cast<GameModeType*>(this));
     }
+    template <typename SceneNameEnum, typename SceneType, typename GameModeType, typename GameControllerType>
+    BaseGameMode<SceneNameEnum, SceneType, GameModeType, GameControllerType>::~BaseGameMode()
+    {
+        delete m_GameController;
+    }
 }

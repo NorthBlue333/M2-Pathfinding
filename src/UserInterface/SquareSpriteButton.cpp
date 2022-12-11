@@ -78,15 +78,8 @@ namespace UI {
         auto MaxSpriteWidth = m_Border.getGlobalBounds().width * 0.8f - (BORDER_THICKNESS * 2);
         auto MaxSpriteHeight = m_Border.getGlobalBounds().height - m_Name.getGlobalBounds().height - (BORDER_THICKNESS * 2);
         auto TextureSize = m_Sprite.getTexture()->getSize();
-        auto Ratio = (float) TextureSize.x / (float) TextureSize.y;
-        auto NewWidth = MaxSpriteHeight * Ratio;
-        auto NewHeight = MaxSpriteWidth / Ratio;
-        if (NewWidth > MaxSpriteWidth) {
-            NewWidth = MaxSpriteWidth;
-        } else {
-            NewHeight = MaxSpriteHeight;
-        }
 
-        m_Sprite.setScale(NewWidth / TextureSize.x, NewHeight / TextureSize.y);
+        const auto Scale = Utilities::GetFillSpriteScale(TextureSize, MaxSpriteWidth, MaxSpriteHeight);
+        m_Sprite.setScale(Scale.x, Scale.y);
     }
 } // UI

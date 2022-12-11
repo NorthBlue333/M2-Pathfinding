@@ -365,5 +365,6 @@ namespace GameEngineImpl::Scenes {
 
     LevelEditorScene::GridNodeButton::~GridNodeButton() {
         delete Overlay;
+        Overlay = nullptr;
     }
 } // Scenes

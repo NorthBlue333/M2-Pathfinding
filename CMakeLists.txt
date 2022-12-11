@@ -49,5 +49,7 @@ add_executable(
         src/Grid/HexagonalGrid.cpp
         src/UserInterface/GridNodeButton.h src/UserInterface/GridNodeButton.cpp)
 
+file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
+
 find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
 target_link_libraries(pathfinding PRIVATE sfml-system sfml-network sfml-graphics sfml-window)

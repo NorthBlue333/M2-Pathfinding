@@ -27,31 +27,31 @@ namespace GameEngineImpl::Scenes {
 
     void LevelEditorScene::Load() {
         auto newFont = new sf::Font;
-        newFont->loadFromFile("../assets/anek_devanagari/static/AnekDevanagari/AnekDevanagari-Bold.ttf");
+        newFont->loadFromFile("./assets/anek_devanagari/static/AnekDevanagari/AnekDevanagari-Bold.ttf");
         m_Fonts.insert({LevelEditorFont::AnekDevanagari, newFont});
 
         auto squareTexture = new sf::Texture;
-        squareTexture->loadFromFile("../assets/textures/WhiteSquare.png");
+        squareTexture->loadFromFile("./assets/textures/WhiteSquare.png");
         m_Textures.insert({LevelEditorTextureName::FilledSquare, squareTexture});
 
         auto hexagonTexture = new sf::Texture;
-        hexagonTexture->loadFromFile("../assets/textures/WhiteHexagon.png");
+        hexagonTexture->loadFromFile("./assets/textures/WhiteHexagon.png");
         m_Textures.insert({LevelEditorTextureName::FilledHexagon, hexagonTexture});
 
         auto outlinedSquareTexture = new sf::Texture;
-        outlinedSquareTexture->loadFromFile("../assets/textures/OutlinedWhiteSquare.png");
+        outlinedSquareTexture->loadFromFile("./assets/textures/OutlinedWhiteSquare.png");
         m_Textures.insert({LevelEditorTextureName::OutlinedSquare, outlinedSquareTexture});
 
         auto outlinedHexagonTexture = new sf::Texture;
-        outlinedHexagonTexture->loadFromFile("../assets/textures/OutlinedWhiteHexagon.png");
+        outlinedHexagonTexture->loadFromFile("./assets/textures/OutlinedWhiteHexagon.png");
         m_Textures.insert({LevelEditorTextureName::OutlinedHexagon, outlinedHexagonTexture});
 
         auto portalSquareTexture = new sf::Texture;
-        portalSquareTexture->loadFromFile("../assets/textures/PortalSquare.png");
+        portalSquareTexture->loadFromFile("./assets/textures/PortalSquare.png");
         m_Textures.insert({LevelEditorTextureName::PortalSquare, portalSquareTexture});
 
         auto portalHexagonTexture = new sf::Texture;
-        portalHexagonTexture->loadFromFile("../assets/textures/PortalHexagon.png");
+        portalHexagonTexture->loadFromFile("./assets/textures/PortalHexagon.png");
         m_Textures.insert({LevelEditorTextureName::PortalHexagon, portalHexagonTexture});
 
         m_BackButton = new UI::TextButton("Back to main menu", *newFont);

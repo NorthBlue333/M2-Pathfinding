@@ -21,7 +21,7 @@ namespace GameEngineImpl::Scenes {
 
         void MainMenuScene::Load() {
             auto newFont = new sf::Font;
-            newFont->loadFromFile("../assets/anek_devanagari/static/AnekDevanagari/AnekDevanagari-Bold.ttf");
+            newFont->loadFromFile("./assets/anek_devanagari/static/AnekDevanagari/AnekDevanagari-Bold.ttf");
             m_Fonts.insert({MainMenuFont::AnekDevanagari, newFont});
 
             // initial state

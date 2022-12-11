@@ -322,8 +322,8 @@ namespace GameEngineImpl::Scenes {
     }
 
     LevelEditorScene::GridDataHolder::~GridDataHolder()  {
-        delete m_GridNodeButton;
         SetLinkedPortal(nullptr);
+        delete m_GridNodeButton;
     }
 
     LevelEditorScene::GridNodeButton *LevelEditorScene::GridDataHolder::GetGridNodeButton() const {

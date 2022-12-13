@@ -55,7 +55,7 @@ add_executable(
         src/PathFinding/Algorithm.tpp src/PathFinding/Algorithm.h src/PathFinding/AStar.h src/GameEngineImpl/Scenes/Traits/HasMouseEvents.cpp
         src/GameEngineImpl/Scenes/Traits/HasMouseEvents.h
         src/GameEngineImpl/Scenes/LevelEditor/common.h src/GameEngineImpl/Scenes/LevelEditor/common.tpp
-        src/GameEngineImpl/Scenes/LevelEditor/LevelEditorGameController.tpp)
+        src/GameEngineImpl/Scenes/LevelEditor/LevelEditorGameController.tpp src/PathFinding/AStar.tpp)
 
 file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
 

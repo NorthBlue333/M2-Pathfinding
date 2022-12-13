@@ -17,6 +17,8 @@ namespace PathFinding {
         virtual ~Algorithm() = default;
 
         virtual std::vector<NodeType*> GetPath(NodeType* Start, NodeType* Target) = 0;
+
+        virtual bool IsNodeBlocked(Node<NodeType>& Node) const;
     protected:
         const GridType* m_Grid;
     };

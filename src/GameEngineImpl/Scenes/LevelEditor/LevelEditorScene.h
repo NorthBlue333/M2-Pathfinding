@@ -3,16 +3,15 @@
 
 #include "../../../GameEngine/BaseScene.h"
 #include "../../common_types.h"
-#include "LevelEditorGameMode.h"
 #include "../../../UserInterface/IButton.h"
 #include "../../../UserInterface/TextButton.h"
 #include "../Traits/HasTextures.h"
 #include "../Traits/HasFonts.h"
-#include "../../../Grid/HexagonalGrid.h"
-#include "../../../Grid/SquareGrid.h"
-#include "../../../UserInterface/GridNodeButton.h"
 #include "../../../UserInterface/SquareSpriteButton.h"
 #include "../../../GridImpl/GridsWithPortals.h"
+#include "LevelEditorGameMode.h"
+#include "LevelEditorGameController.h"
+#include "common.h"
 #include <vector>
 #include <map>
 
@@ -23,7 +22,9 @@ namespace GameEngineImpl::Scenes {
         OutlinedSquare,
         OutlinedHexagon,
         PortalSquare,
-        PortalHexagon
+        PortalHexagon,
+        FlagSquare,
+        FlagHexagon
     };
 
     enum struct LevelEditorFont {
@@ -40,50 +41,9 @@ namespace GameEngineImpl::Scenes {
             public Traits::HasTextures<LevelEditorTextureName>,
             public Traits::HasFonts<LevelEditorFont>
     {
-        template <typename DataHolderType>
-        class GridNodeButton : public UI::GridNodeButton {
-            using UI::GridNodeButton::GridNodeButton;
-
-            sf::RectangleShape* Overlay = nullptr;
-
-        public:
-            void ShowOverlay();
-            void HideOverlay();
-            void Render(sf::RenderWindow *Window) override;
-            ~GridNodeButton() override;
-            DataHolderType* DataHolder;
-        };
-
-        template <typename GridNodeType>
-        class GridDataHolder : public GridImpl::GridDataHolder<GridDataHolder, GridNodeType> {
-        public:
-            using GridNodeButtonType = GridNodeButton<GridDataHolder>;
-            GridDataHolder() = default;
-            explicit GridDataHolder(GridNodeButtonType* Btn) : m_GridNodeButton(Btn) {};
-            ~GridDataHolder() override;
-
-            void SetGridNodeButton(GridNodeButtonType* Btn);
-            GridNodeButtonType* GetGridNodeButton() const;
-
-            void Render(sf::RenderWindow *Window) override;
-        protected:
-            void SetTextureFromNodeType() override;
-            GridNodeButton<GridDataHolder>* m_GridNodeButton = nullptr;
-        };
-
-        using HexagonalGridType = Grid::RenderableHexagonalGrid<GridDataHolder>;
-        using SquareGridType = Grid::RenderableSquareGrid<GridDataHolder>;
-
         union GridType {
             SquareGridType* SquareGrid = nullptr;
             HexagonalGridType* HexagonalGrid;
-        };
-
-        class NodeTypeButton : public UI::SquareSpriteButton {
-            using UI::SquareSpriteButton::SquareSpriteButton;
-
-        public:
-            GridImpl::NodeType TargetNodeType;
         };
 
     public:
@@ -106,8 +66,6 @@ namespace GameEngineImpl::Scenes {
         UI::TextButton* m_BackButton;
         std::vector<UI::TextButton*> m_GridTypeButtons;
         std::vector<UI::IButton*> m_EditorButtons;
-        NodeTypeButton* m_CurrentNodeTypeButton = nullptr;
-        GridImpl::IGridDataHolder * m_LastPortal = nullptr;
 
         LevelEditorGridType m_CurrentGridType = LevelEditorGridType::Square;
         GridType m_Grid;

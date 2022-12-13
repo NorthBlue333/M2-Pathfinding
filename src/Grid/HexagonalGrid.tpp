@@ -23,7 +23,11 @@ namespace Grid {
 
     template<template <typename NodeType> typename DataHolderNodeType>
     RenderableSize2D RenderableHexagonalGrid<DataHolderNodeType>::GetNodeRenderSize(const RenderableSize2D &ContainerSize) const {
-        const auto Size = std::min(ContainerSize.Width / this->m_Width, ContainerSize.Height / this->m_Height);
+        const auto Size = std::min(
+            // +1 for row offset
+            ContainerSize.Width / (this->m_Width + 1),
+            ContainerSize.Height / this->m_Height
+        );
         return {
             Size,
             Size,

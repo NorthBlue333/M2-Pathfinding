@@ -1,6 +1,6 @@
 #include "HasTextures.h"
 
-namespace Traits {
+namespace GameEngineImpl::Traits {
     template <typename EnumTextureName>
     HasTextures<EnumTextureName>::~HasTextures()
     {

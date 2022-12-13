@@ -30,29 +30,22 @@ namespace GameEngineImpl::Scenes {
         newFont->loadFromFile("./assets/anek_devanagari/static/AnekDevanagari/AnekDevanagari-Bold.ttf");
         m_Fonts.insert({LevelEditorFont::AnekDevanagari, newFont});
 
-        auto squareTexture = new sf::Texture;
-        squareTexture->loadFromFile("./assets/textures/WhiteSquare.png");
-        m_Textures.insert({LevelEditorTextureName::FilledSquare, squareTexture});
+        std::map<LevelEditorTextureName, std::string> TexturesToLoad = {
+            {LevelEditorTextureName::FilledSquare, "./assets/textures/WhiteSquare.png"},
+            {LevelEditorTextureName::FilledHexagon, "./assets/textures/WhiteHexagon.png"},
+            {LevelEditorTextureName::OutlinedSquare, "./assets/textures/OutlinedWhiteSquare.png"},
+            {LevelEditorTextureName::OutlinedHexagon, "./assets/textures/OutlinedWhiteHexagon.png"},
+            {LevelEditorTextureName::PortalSquare, "./assets/textures/PortalSquare.png"},
+            {LevelEditorTextureName::PortalHexagon, "./assets/textures/PortalHexagon.png"},
+            {LevelEditorTextureName::FlagSquare, "./assets/textures/FlagSquare.png"},
+            {LevelEditorTextureName::FlagHexagon, "./assets/textures/FlagHexagon.png"},
+        };
 
-        auto hexagonTexture = new sf::Texture;
-        hexagonTexture->loadFromFile("./assets/textures/WhiteHexagon.png");
-        m_Textures.insert({LevelEditorTextureName::FilledHexagon, hexagonTexture});
-
-        auto outlinedSquareTexture = new sf::Texture;
-        outlinedSquareTexture->loadFromFile("./assets/textures/OutlinedWhiteSquare.png");
-        m_Textures.insert({LevelEditorTextureName::OutlinedSquare, outlinedSquareTexture});
-
-        auto outlinedHexagonTexture = new sf::Texture;
-        outlinedHexagonTexture->loadFromFile("./assets/textures/OutlinedWhiteHexagon.png");
-        m_Textures.insert({LevelEditorTextureName::OutlinedHexagon, outlinedHexagonTexture});
-
-        auto portalSquareTexture = new sf::Texture;
-        portalSquareTexture->loadFromFile("./assets/textures/PortalSquare.png");
-        m_Textures.insert({LevelEditorTextureName::PortalSquare, portalSquareTexture});
-
-        auto portalHexagonTexture = new sf::Texture;
-        portalHexagonTexture->loadFromFile("./assets/textures/PortalHexagon.png");
-        m_Textures.insert({LevelEditorTextureName::PortalHexagon, portalHexagonTexture});
+        for (const auto &Pair : TexturesToLoad) {
+            auto texture = new sf::Texture;
+            texture->loadFromFile(Pair.second);
+            m_Textures.insert({Pair.first, texture});
+        }
 
         m_BackButton = new UI::TextButton("Back to main menu", *newFont);
         m_BackButton->SetPosition(10, 10);
@@ -60,7 +53,7 @@ namespace GameEngineImpl::Scenes {
 
         const auto WindowSize = m_Game->GetWindow()->getSize();
         auto hexaTypeButton = new UI::TextButton("HexaType", *newFont);
-        // @todo compute pos correctly maybe
+        // @todo compute position correctly maybe
         hexaTypeButton->SetPosition(WindowSize.x - 200, WindowSize.y - 50);
         hexaTypeButton->SetOnClick([this](auto && Btn) { SetCurrentGridType(LevelEditorGridType::Hexagonal); });
         m_GridTypeButtons.push_back(hexaTypeButton);
@@ -78,22 +71,26 @@ namespace GameEngineImpl::Scenes {
         for (auto & Btn : m_EditorButtons) {
             delete Btn;
         }
+        m_EditorButtons = {};
 
         for (auto & Btn : m_GridTypeButtons) {
             delete Btn;
         }
+        m_GridTypeButtons = {};
 
         if (m_CurrentGridType == LevelEditorGridType::Hexagonal) {
             delete m_Grid.HexagonalGrid;
+            m_Grid.HexagonalGrid = nullptr;
         } else if (m_CurrentGridType == LevelEditorGridType::Square) {
             delete m_Grid.SquareGrid;
+            m_Grid.SquareGrid = nullptr;
         }
     }
 
     std::vector<UI::IButton*> LevelEditorScene::GetButtons() {
         std::vector<UI::IButton*> buttons{m_EditorButtons};
         buttons.push_back(m_BackButton);
-        for (auto &Btn : m_GridTypeButtons) {
+        for (auto Btn : m_GridTypeButtons) {
             buttons.push_back(Btn);
         }
         if (m_CurrentGridType == LevelEditorGridType::Square) {
@@ -110,32 +107,23 @@ namespace GameEngineImpl::Scenes {
         return buttons;
     }
 
-    LevelEditorScene::NodeTypeButton* LevelEditorScene::AddButton(
+    NodeTypeButton* LevelEditorScene::AddButton(
             const sf::Texture *Texture,
             const sf::String &Name,
             GridImpl::NodeType NodeType
     ) {
-        auto newButton = new LevelEditorScene::NodeTypeButton(Texture, Name, *m_Fonts.at(LevelEditorFont::AnekDevanagari), BUTTON_WIDTH, BUTTON_HEIGHT, 14.f);
+        auto newButton = new NodeTypeButton(Texture, Name, *m_Fonts.at(LevelEditorFont::AnekDevanagari), BUTTON_WIDTH, BUTTON_HEIGHT, 14.f);
         auto WindowSize = m_Game->GetWindow()->getSize();
         newButton->TargetNodeType = NodeType;
         newButton->SetOnClick([this](auto && Btn) {
-            if (m_CurrentNodeTypeButton != nullptr) {
-                m_CurrentNodeTypeButton->ToggleActive(false);
-            }
-            auto CastedBtn = static_cast<LevelEditorScene::NodeTypeButton*>(Btn);
-            if (m_CurrentNodeTypeButton == CastedBtn) {
-                m_CurrentNodeTypeButton = nullptr;
-                return;
-            }
-            CastedBtn->ToggleActive(true);
-            m_CurrentNodeTypeButton = CastedBtn;
+            m_GameMode->GetGameController()->HandleOnNodeTypeButtonClick(Btn);
         });
         newButton->SetPosition(BUTTON_MARGIN + ((BUTTON_MARGIN + BUTTON_WIDTH) * (float) m_EditorButtons.size()), WindowSize.y - BUTTON_HEIGHT - BUTTON_MARGIN);
         m_EditorButtons.push_back(newButton);
         return newButton;
     }
 
-    LevelEditorScene::HexagonalGridType::DataHolder_T *LevelEditorScene::CreateHexagonalGridDataHolder(
+    HexagonalGridType::DataHolder_T *LevelEditorScene::CreateHexagonalGridDataHolder(
             HexagonalGridType::GridNode_T * GridNode,
             const Grid::RenderableCoordinates2D& RenderCoordinates,
             const Grid::RenderableSize2D& RenderSize
@@ -144,15 +132,16 @@ namespace GameEngineImpl::Scenes {
                 {GridImpl::NodeType::Empty, m_Textures.at(LevelEditorTextureName::OutlinedHexagon)},
                 {GridImpl::NodeType::Plain, m_Textures.at(LevelEditorTextureName::FilledHexagon)},
                 {GridImpl::NodeType::Portal, m_Textures.at(LevelEditorTextureName::PortalHexagon)},
+                {GridImpl::NodeType::PlayerStart, m_Textures.at(LevelEditorTextureName::FlagHexagon)},
         };
-        return FillGridDataHolder<LevelEditorScene::HexagonalGridType::DataHolder_T>(
+        return FillGridDataHolder<HexagonalGridType::DataHolder_T>(
                 Textures,
                 RenderCoordinates,
                 RenderSize
         );
     }
 
-    LevelEditorScene::SquareGridType::DataHolder_T *LevelEditorScene::CreateSquareGridDataHolder(
+    SquareGridType::DataHolder_T *LevelEditorScene::CreateSquareGridDataHolder(
             SquareGridType::GridNode_T * GridNode,
             const Grid::RenderableCoordinates2D& RenderCoordinates,
             const Grid::RenderableSize2D& RenderSize
@@ -161,8 +150,9 @@ namespace GameEngineImpl::Scenes {
                 {GridImpl::NodeType::Empty, m_Textures.at(LevelEditorTextureName::OutlinedSquare)},
                 {GridImpl::NodeType::Plain, m_Textures.at(LevelEditorTextureName::FilledSquare)},
                 {GridImpl::NodeType::Portal, m_Textures.at(LevelEditorTextureName::PortalSquare)},
+                {GridImpl::NodeType::PlayerStart, m_Textures.at(LevelEditorTextureName::FlagSquare)},
         };
-        return FillGridDataHolder<LevelEditorScene::SquareGridType::DataHolder_T>(
+        return FillGridDataHolder<SquareGridType::DataHolder_T>(
                 Textures,
                 RenderCoordinates,
                 RenderSize
@@ -201,18 +191,19 @@ namespace GameEngineImpl::Scenes {
 
     void LevelEditorScene::SetCurrentGridType(LevelEditorGridType NewGridType) {
         m_CurrentGridType = NewGridType;
-        m_LastPortal = nullptr;
-        CreateGrid();
         ResetNodeTypeButtons();
+        CreateGrid();
 
         if (m_CurrentGridType == LevelEditorGridType::Square) {
             AddButton(m_Textures.at(LevelEditorTextureName::OutlinedSquare), "Empty", GridImpl::NodeType::Empty);
             AddButton(m_Textures.at(LevelEditorTextureName::FilledSquare), "Plain", GridImpl::NodeType::Plain);
             AddButton(m_Textures.at(LevelEditorTextureName::PortalSquare), "Portal", GridImpl::NodeType::Portal);
+            AddButton(m_Textures.at(LevelEditorTextureName::FlagSquare), "Player start", GridImpl::NodeType::PlayerStart);
         } else if (m_CurrentGridType == LevelEditorGridType::Hexagonal) {
             AddButton(m_Textures.at(LevelEditorTextureName::OutlinedHexagon), "Empty", GridImpl::NodeType::Empty);
             AddButton(m_Textures.at(LevelEditorTextureName::FilledHexagon), "Plain", GridImpl::NodeType::Plain);
             AddButton(m_Textures.at(LevelEditorTextureName::PortalHexagon), "Portal", GridImpl::NodeType::Portal);
+            AddButton(m_Textures.at(LevelEditorTextureName::PortalHexagon), "Player start", GridImpl::NodeType::PlayerStart);
         }
     }
 
@@ -222,6 +213,7 @@ namespace GameEngineImpl::Scenes {
         }
 
         m_EditorButtons = {};
-        m_CurrentNodeTypeButton = nullptr;
+
+        m_GameMode->GetGameController()->ResetNodeTypeButtons();
     }
 } // Scenes

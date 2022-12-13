@@ -21,4 +21,10 @@ namespace GameEngine {
     {
         delete m_GameController;
     }
+
+    template<typename SceneNameEnum, typename SceneType, typename GameModeType, typename GameControllerType>
+    GameControllerType *
+    BaseGameMode<SceneNameEnum, SceneType, GameModeType, GameControllerType>::GetGameController() const {
+        return m_GameController;
+    }
 }

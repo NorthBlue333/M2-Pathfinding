@@ -12,18 +12,13 @@ namespace GameEngine {
 
     template <typename SceneNameEnum, typename SceneType, typename GameModeType, typename GameControllerType>
     class BaseGameMode {
-//        static_assert(std::is_base_of<BaseScene<SceneNameEnum, SceneType, GameModeType, GameControllerType>, SceneType>::value, "SceneType must inherit from BaseScene");
-//        static_assert(std::is_base_of<BaseGameMode, GameModeType>::value,
-//                      "GameModeType must inherit from BaseGameMode");
-//        static_assert(
-//                std::is_base_of<BaseGameController<SceneNameEnum, SceneType, GameModeType, GameControllerType>, GameControllerType>::value,
-//                "GameControllerType must inherit from BaseGameController");
-
     public:
         explicit BaseGameMode(Game<SceneNameEnum>* Game, SceneType* Scene);
         virtual ~BaseGameMode();
 
         void ComputeInputs();
+
+        GameControllerType* GetGameController() const;
     protected:
         Game<SceneNameEnum>* m_Game;
         SceneType* m_Scene;

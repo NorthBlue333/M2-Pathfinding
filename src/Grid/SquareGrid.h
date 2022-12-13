@@ -43,6 +43,7 @@ namespace Grid {
     class RenderableSquareGrid :
             public RenderableGrid<BaseSquareGrid<RenderableSquareGridNode<DataHolderNodeType>, DataHolderNodeType>, RenderableSquareGridNode<DataHolderNodeType>, DataHolderNodeType>
     {
+        static int constexpr MARGIN_BETWEEN_NODES = 1;
     public:
         using GridNode_T = RenderableSquareGridNode<DataHolderNodeType>;
         using DataHolder_T = DataHolderNodeType<GridNode_T>;

@@ -4,7 +4,7 @@
 #include <map>
 #include <SFML/Graphics/Font.hpp>
 
-namespace Traits {
+namespace GameEngineImpl::Traits {
     template <typename EnumFontName>
     class HasFonts {
     protected:

@@ -30,6 +30,8 @@ namespace GridImpl {
             LinkedPortal->LinkedPortal = static_cast<GridDataHolderType<GridNodeType>*>(this);
 
         if (nullptr != OldPortal) {
+            if (OldPortal->LinkedPortal == this)
+                OldPortal->LinkedPortal = nullptr;
             OldPortal->SetCurrentNodeType(NodeType::Empty);
         }
     }

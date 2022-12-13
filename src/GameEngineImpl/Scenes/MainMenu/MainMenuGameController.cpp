@@ -26,20 +26,8 @@ namespace GameEngineImpl {
                     continue;
                 }
 
-                if (
-                        sf::Event::MouseButtonPressed == event.type
-                        && sf::Mouse::Button::Left == event.mouseButton.button
-                )
-                    HandleOnMouseLeft(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
-            }
-        }
-
-        void MainMenuGameController::HandleOnMouseLeft(sf::Vector2f MousePosition) {
-            for (auto & button : m_Scene->GetButtons()) {
-                if (!button->GetGlobalBounds().contains(MousePosition))
-                    continue;
-
-                button->Click();
+                auto Buttons = m_Scene->GetButtons();
+                HandleOnMouseLeft(event, Buttons);
             }
         }
     } // GameEngineImpl

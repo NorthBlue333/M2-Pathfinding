@@ -3,12 +3,14 @@
 namespace GameEngine {
     template<typename SceneNameEnum>
     Game<SceneNameEnum>::Game(SceneNameEnum DefaultSceneName, Game::SceneFactoryConstructor SceneFactoryConstructor,
-                              unsigned int WindowWidth, unsigned int WindowHeight) :
+                              unsigned int WindowWidth, unsigned int WindowHeight,
+                              int FixedRateInMillis) :
             m_SceneFactoryConstructor(SceneFactoryConstructor),
             m_CurrentScene(nullptr),
             m_Window(sf::RenderWindow(sf::VideoMode(WindowWidth, WindowHeight), "DragBox")),
             m_WindowWidth(WindowWidth),
-            m_WindowHeight(WindowHeight)
+            m_WindowHeight(WindowHeight),
+            m_FixedRateInMillis(FixedRateInMillis)
     {
         m_CurrentSceneName = DefaultSceneName;
         m_SceneNameToLoad = DefaultSceneName;
@@ -20,11 +22,17 @@ namespace GameEngine {
         sf::Clock clock;
         while (m_Window.isOpen()) {
             sf::Time Elapsed = clock.restart();
+
             if (m_SceneNameToLoad != m_CurrentSceneName)
                 ExecuteLoadScene();
             ComputeInputs();
             ExecuteCalculations(Elapsed);
             Render();
+
+            const auto ElapsedMillis = Elapsed.asMilliseconds();
+            if (ElapsedMillis < m_FixedRateInMillis) {
+                sf::sleep(sf::milliseconds(m_FixedRateInMillis - ElapsedMillis));
+            }
         }
         return 0;
     }

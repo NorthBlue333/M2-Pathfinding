@@ -2,53 +2,62 @@
 #include "LevelEditorGameController.h"
 #include "LevelEditorScene.h"
 
-namespace GameEngineImpl {
-    namespace Scenes {
-        LevelEditorGameController::LevelEditorGameController(
-                GameType *Game,
-                LevelEditorScene* Scene,
-                LevelEditorGameMode *GameMode
-        ) : BaseGameController(
-                Game,
-                Scene,
-                GameMode
-        ) {
+namespace GameEngineImpl::Scenes {
+    LevelEditorGameController::LevelEditorGameController(
+            GameType *Game,
+            LevelEditorScene* Scene,
+            LevelEditorGameMode *GameMode
+    ) : BaseGameController(
+            Game,
+            Scene,
+            GameMode
+    ) {
 
-        }
+    }
 
-        void LevelEditorGameController::ComputeInputs() {
-            sf::Event event{};
-            auto Window = m_Game->GetWindow();
-            while(Window->pollEvent( event ))
-            {
-                if (sf::Event::Closed == event.type) {
-                    m_Game->StopGame();
-                    continue;
-                }
+    void LevelEditorGameController::ComputeInputs() {
+        sf::Event event{};
+        auto Window = m_Game->GetWindow();
 
-                if (
-                        sf::Event::MouseButtonPressed == event.type
-                        && sf::Mouse::Button::Left == event.mouseButton.button
-                )
-                    HandleOnMouseLeft(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+        while(Window->pollEvent( event ))
+        {
+            if (sf::Event::Closed == event.type) {
+                m_Game->StopGame();
+                continue;
             }
 
-            HandleOnMouseHover(Window->mapPixelToCoords(sf::Mouse::getPosition(*Window)));
+            SetMousePressed(event);
+            auto Buttons = m_Scene->GetButtons();
+            HandleOnMouseLeft(event, Buttons);
         }
 
-        void LevelEditorGameController::HandleOnMouseLeft(sf::Vector2f MousePosition) {
-            for (auto & button : m_Scene->GetButtons()) {
-                if (!button->GetGlobalBounds().contains(MousePosition))
-                    continue;
+        auto MouseCoords = Window->mapPixelToCoords(sf::Mouse::getPosition(*Window));
+        // refetch buttons each time because they may have changed
+        auto Buttons = m_Scene->GetButtons();
+        HandleOnMouseDragOver(MouseCoords, Buttons);
+        Buttons = m_Scene->GetButtons();
+        HandleOnMouseHover(MouseCoords, Buttons);
+    }
 
-                button->Click();
-            }
-        }
+    void LevelEditorGameController::ResetNodeTypeButtons() {
+        m_CurrentNodeTypeButton = nullptr;
+        m_LastPortal = nullptr;
+        m_PlayerStart = nullptr;
+    }
 
-        void LevelEditorGameController::HandleOnMouseHover(sf::Vector2f MousePosition) {
-            for (auto & button : m_Scene->GetButtons()) {
-                button->Hover(button->GetGlobalBounds().contains(MousePosition));
-            }
+    void LevelEditorGameController::HandleOnNodeTypeButtonClick(UI::IButton *Btn) {
+        if (m_CurrentNodeTypeButton != nullptr) {
+            m_CurrentNodeTypeButton->ToggleActive(false);
         }
-    } // GameEngineImpl
+        auto CastedBtn = dynamic_cast<NodeTypeButton*>(Btn);
+        if (nullptr == CastedBtn)
+            return;
+
+        if (m_CurrentNodeTypeButton == CastedBtn) {
+            m_CurrentNodeTypeButton = nullptr;
+            return;
+        }
+        CastedBtn->ToggleActive(true);
+        m_CurrentNodeTypeButton = CastedBtn;
+    }
 } // Scenes

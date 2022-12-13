@@ -3,83 +3,82 @@
 #include <iostream>
 
 namespace GameEngineImpl::Scenes {
-        MainMenuScene::MainMenuScene(GameType *Game) : BaseScene(Game), m_Title(sf::Text()) {
+    MainMenuScene::MainMenuScene(GameType *Game) : BaseScene(Game), m_Title(sf::Text()) {
 
+    }
+
+    void MainMenuScene::ExecuteCalculations(sf::Time Elapsed) {
+
+    }
+
+    void MainMenuScene::Render() {
+        auto Window = m_Game->GetWindow();
+        Window->draw(m_Title);
+        for (auto &button : m_Buttons) {
+            button->Render(Window);
         }
+    }
 
-        void MainMenuScene::ExecuteCalculations(sf::Time Elapsed) {
+    void MainMenuScene::Load() {
+        auto newFont = new sf::Font;
+        newFont->loadFromFile("./assets/anek_devanagari/static/AnekDevanagari/AnekDevanagari-Bold.ttf");
+        m_Fonts.insert({MainMenuFont::AnekDevanagari, newFont});
 
+        // initial state
+        ChangeCurrentState(m_CurrentState);
+    }
+
+    MainMenuScene::~MainMenuScene() {
+        for (auto & Button : m_Buttons) {
+            delete Button;
         }
+    }
 
-        void MainMenuScene::Render() {
-            auto Window = m_Game->GetWindow();
-            Window->draw(m_Title);
-            for (auto &button : m_Buttons) {
-                button->Render(Window);
-            }
+    void MainMenuScene::SetTitle(const sf::String &Text) {
+        m_Title = sf::Text(Text, *m_Fonts.at(MainMenuFont::AnekDevanagari), TITLE_TEXT_SIZE);
+        m_Title.setPosition(200, 30);
+    }
+
+    void MainMenuScene::AddButton(
+            const sf::String &Text,
+            const UI::TextButton::EventType& OnClick
+    ) {
+        auto YOffset = TITLE_TEXT_SIZE + 60 + (m_Buttons.size() * (BUTTON_TEXT_SIZE + 50));
+        auto NewButton = new UI::TextButton(Text, *m_Fonts.at(MainMenuFont::AnekDevanagari), BUTTON_TEXT_SIZE);
+        m_Buttons.push_back(NewButton);
+        NewButton->SetPosition(30, YOffset);
+
+        if (nullptr != OnClick)
+            NewButton->SetOnClick(OnClick);
+    }
+
+    void MainMenuScene::ChangeCurrentState(MainMenuState NewState) {
+        m_CurrentState = NewState;
+        m_Buttons.clear();
+        switch (m_CurrentState) {
+            case MainMenuState::LevelSelect:
+                ShowLevelSelectState();
+                break;
+            case MainMenuState::Main:
+            default:
+                ShowMainState();
+                break;
         }
+    }
 
-        void MainMenuScene::Load() {
-            auto newFont = new sf::Font;
-            newFont->loadFromFile("./assets/anek_devanagari/static/AnekDevanagari/AnekDevanagari-Bold.ttf");
-            m_Fonts.insert({MainMenuFont::AnekDevanagari, newFont});
+    void MainMenuScene::ShowMainState() {
+        SetTitle("Main menu");
+        AddButton("Select level", [this](auto && Btn) { ChangeCurrentState(MainMenuState::LevelSelect); });
+        AddButton("Level editor", [this](auto && Btn) { m_Game->LoadScene(GameSceneName::LevelEditor); });
+        AddButton("Quit", [this](auto && Btn) { m_Game->StopGame(); });
+    }
 
-            // initial state
-            ChangeCurrentState(m_CurrentState);
-        }
+    void MainMenuScene::ShowLevelSelectState() {
+        SetTitle("Select level");
+        AddButton("Back to main menu", [this](auto && Btn) { ChangeCurrentState(MainMenuState::Main); });
+    }
 
-        MainMenuScene::~MainMenuScene() {
-            for (auto & Button : m_Buttons) {
-                delete Button;
-            }
-        }
-
-        void MainMenuScene::SetTitle(const sf::String &Text) {
-            m_Title = sf::Text(Text, *m_Fonts.at(MainMenuFont::AnekDevanagari), TITLE_TEXT_SIZE);
-            m_Title.setPosition(200, 30);
-        }
-
-        void MainMenuScene::AddButton(
-                const sf::String &Text,
-                const UI::TextButton::EventType& OnClick
-        ) {
-            auto YOffset = TITLE_TEXT_SIZE + 60 + (m_Buttons.size() * (BUTTON_TEXT_SIZE + 50));
-            auto NewButton = new UI::TextButton(Text, *m_Fonts.at(MainMenuFont::AnekDevanagari), BUTTON_TEXT_SIZE);
-            m_Buttons.push_back(NewButton);
-            NewButton->SetPosition(30, YOffset);
-
-            if (nullptr != OnClick)
-                NewButton->SetOnClick(OnClick);
-        }
-
-        void MainMenuScene::ChangeCurrentState(MainMenuState NewState) {
-            m_CurrentState = NewState;
-            m_Buttons.clear();
-            switch (m_CurrentState) {
-                case MainMenuState::LevelSelect:
-                    ShowLevelSelectState();
-                    break;
-                case MainMenuState::Main:
-                default:
-                    ShowMainState();
-                    break;
-            }
-        }
-
-        void MainMenuScene::ShowMainState() {
-            SetTitle("Main menu");
-            AddButton("Select level", [this](auto && Btn) { ChangeCurrentState(MainMenuState::LevelSelect); });
-            AddButton("Level editor", [this](auto && Btn) { m_Game->LoadScene(GameSceneName::LevelEditor); });
-            AddButton("Quit", [this](auto && Btn) { m_Game->StopGame(); });
-        }
-
-        void MainMenuScene::ShowLevelSelectState() {
-            SetTitle("Select level");
-            AddButton("Back to main menu", [this](auto && Btn) { ChangeCurrentState(MainMenuState::Main); });
-        }
-
-        std::vector<UI::IButton*>& MainMenuScene::GetButtons() {
-            return m_Buttons;
-        }
-
+    std::vector<UI::IButton*>& MainMenuScene::GetButtons() {
+        return m_Buttons;
+    }
 } // Scenes

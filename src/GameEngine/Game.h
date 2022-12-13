@@ -13,7 +13,13 @@ namespace GameEngine {
     private:
         using SceneFactoryConstructor = std::function<ISceneFactory<SceneNameEnum>*(Game*)>;
     public:
-        Game(SceneNameEnum DefaultSceneName, SceneFactoryConstructor SceneFactoryConstructor, unsigned int WindowWidth = 1200, unsigned int WindowHeight = 800);
+        Game(
+            SceneNameEnum DefaultSceneName,
+            SceneFactoryConstructor SceneFactoryConstructor,
+            unsigned int WindowWidth = 1200,
+            unsigned int WindowHeight = 1000,
+            int FixedRateInMillis = 10
+        );
         ~Game();
 
         int Run();
@@ -30,6 +36,7 @@ namespace GameEngine {
 
         unsigned int m_WindowWidth;
         unsigned int m_WindowHeight;
+        int m_FixedRateInMillis;
         sf::RenderWindow m_Window;
 
         void ExecuteLoadScene();

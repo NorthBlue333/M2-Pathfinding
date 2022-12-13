@@ -8,7 +8,8 @@ namespace GridImpl {
     enum struct NodeType {
         Empty = 0,
         Plain,
-        Portal
+        Portal,
+        PlayerStart
     };
 
     class IGridDataHolder {
@@ -26,7 +27,7 @@ namespace GridImpl {
         virtual void SetTextureFromNodeType() = 0;
 
         std::map<NodeType, sf::Texture*> Textures;
-        NodeType CurrentNodeType = NodeType::Empty;
+        NodeType CurrentNodeType = NodeType::Plain;
     };
 
     template <template <typename NodeType> typename GridDataHolderType, typename GridNodeType>

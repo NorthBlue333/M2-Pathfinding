@@ -1,6 +1,6 @@
 #include "HasFonts.h"
 
-namespace Traits {
+namespace GameEngineImpl::Traits {
     template <typename EnumFontName>
     HasFonts<EnumFontName>::~HasFonts()
     {

@@ -4,7 +4,7 @@
 #include <map>
 #include <SFML/Graphics/Texture.hpp>
 
-namespace Traits {
+namespace GameEngineImpl::Traits {
     template <typename EnumTextureName>
     class HasTextures {
     protected:

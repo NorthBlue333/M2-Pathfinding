@@ -142,10 +142,10 @@ namespace GameEngineImpl::Scenes::PlayGame {
                     return CreateSquareGridDataHolder(GridNode, RenderCoordinates, RenderSize);
                 }
             );
-            auto ContainerSize = m_Grid.HexagonalGrid->GetContainerSize();
+            auto ContainerSize = m_Grid.SquareGrid->GetContainerSize();
             SetPlayerPositionFromGridSize(
-                m_Grid.HexagonalGrid->GetGridRenderSize(ContainerSize),
-                m_Grid.HexagonalGrid->GetNodeRenderSize(ContainerSize)
+                m_Grid.SquareGrid->GetGridRenderSize(ContainerSize),
+                m_Grid.SquareGrid->GetNodeRenderSize(ContainerSize)
             );
         } else if (m_CurrentGridType == PlayGameGridType::Hexagonal) {
             m_Grid.HexagonalGrid = new HexagonalGridType(

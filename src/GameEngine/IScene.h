@@ -4,10 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 namespace GameEngine {
-    template <typename SceneNameEnum>
-    class Game;
-
-    template <typename SceneNameEnum>
+    template <typename GameType, typename SceneNameEnum>
     class IScene {
     public:
         virtual ~IScene() = default;

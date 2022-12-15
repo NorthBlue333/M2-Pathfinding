@@ -5,19 +5,16 @@
 #include "IScene.h"
 
 namespace GameEngine {
-    template <typename SceneNameEnum>
-    class Game;
-
-    template <typename SceneNameEnum>
+    template <typename GameType, typename SceneNameEnum>
     class ISceneFactory {
         static_assert(std::is_enum<SceneNameEnum>::value, "SceneNameEnum must be enum");
     public:
-        explicit ISceneFactory(Game<SceneNameEnum>* Game);
+        explicit ISceneFactory(GameType* Game);
         virtual ~ISceneFactory() = default;
 
-        virtual IScene<SceneNameEnum>* CreateSceneFromName(SceneNameEnum Name) = 0;
+        virtual IScene<GameType, SceneNameEnum>* CreateSceneFromName(SceneNameEnum Name) = 0;
     protected:
-        Game<SceneNameEnum>* m_Game;
+        GameType* m_Game;
     };
 
 } // GameEngine

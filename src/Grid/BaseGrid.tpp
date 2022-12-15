@@ -1,11 +1,21 @@
 #include "BaseGrid.h"
 
 namespace Grid {
-    template<typename GridNodeType, template <typename NodeType> typename DataHolderNodeType>
-    void BaseGrid<GridNodeType, DataHolderNodeType>::CreateNodes(
+    template<typename GridNodeType, template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    bool BaseGridNode<GridNodeType, DataHolderNodeType, WithDiagonals>::IsBlocked() const {
+        return DataHolder->IsBlocked();
+    }
+
+    template<typename DataHolderType, typename GridNodeType, bool WithDiagonals>
+    bool BaseDataHolderType<DataHolderType, GridNodeType, WithDiagonals>::IsBlocked() const {
+        return false;
+    }
+
+    template<typename GridNodeType, template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    void BaseGrid<GridNodeType, DataHolderNodeType, WithDiagonals>::CreateNodes(
             unsigned int& Width,
             unsigned int& Height,
-            std::function<DataHolderNodeType<GridNodeType>*(GridNodeType* GridNode, const Coordinates2D& Coordinates)> CreateDataHolderNode
+            std::function<DataHolderNodeType<GridNodeType, WithDiagonals>*(GridNodeType* GridNode, const Coordinates2D& Coordinates)> CreateDataHolderNode
     ) {
         m_Width = Width;
         m_Height = Height;
@@ -15,31 +25,38 @@ namespace Grid {
             for (int X = 0; X < Width; ++X) {
                 Coordinates2D Coordinates{X, Y};
                 m_Nodes.emplace_back(Coordinates, nullptr);
-                auto LastEl = m_Nodes.back();
-                LastEl.DataHolder = CreateDataHolderNode(&LastEl, Coordinates);
+                auto LastEl = &m_Nodes.back();
+                LastEl->DataHolder = CreateDataHolderNode(&LastEl, Coordinates);
+                LastEl->DataHolder->Node = LastEl;
             }
         }
         GenerateNeighbors();
     }
 
-    template<typename GridNodeType, template <typename NodeType> typename DataHolderNodeType>
-    std::vector<GridNodeType> const*BaseGrid<GridNodeType, DataHolderNodeType>::GetNodes() const {
+    template<typename GridNodeType, template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    std::vector<GridNodeType> const*BaseGrid<GridNodeType, DataHolderNodeType, WithDiagonals>::GetNodes() const {
         return &m_Nodes;
     }
 
-    template<typename GridNodeType, template <typename NodeType> typename DataHolderNodeType>
-    std::size_t BaseGrid<GridNodeType, DataHolderNodeType>::GetIndexFromCoordinates(const Coordinates2D &Coordinates) const {
+    template<typename GridNodeType, template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    GridNodeType *
+    BaseGrid<GridNodeType, DataHolderNodeType, WithDiagonals>::GetNodeAtCoordinates(Coordinates2D &Coordinates) {
+        return &m_Nodes[GetIndexFromCoordinates(Coordinates)];
+    }
+
+    template<typename GridNodeType, template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    std::size_t BaseGrid<GridNodeType, DataHolderNodeType, WithDiagonals>::GetIndexFromCoordinates(const Coordinates2D &Coordinates) const {
         return Coordinates.Y * m_Width + Coordinates.X;
     }
 
-    template<typename GridNodeType, template <typename NodeType> typename DataHolderNodeType>
-    Coordinates2D BaseGrid<GridNodeType, DataHolderNodeType>::GetCoordinatesFromIndex(const int& Index) const {
+    template<typename GridNodeType, template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    Coordinates2D BaseGrid<GridNodeType, DataHolderNodeType, WithDiagonals>::GetCoordinatesFromIndex(const int& Index) const {
         const auto X = Index % m_Width;
         return {X, (Index - X) / m_Width};
     }
 
-    template<typename GridNodeType, template <typename NodeType> typename DataHolderNodeType>
-    BaseGridNode<GridNodeType, DataHolderNodeType> &BaseGridNode<GridNodeType, DataHolderNodeType>::operator=(GridNodeType&& other) {
+    template<typename GridNodeType, template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    BaseGridNode<GridNodeType, DataHolderNodeType, WithDiagonals> &BaseGridNode<GridNodeType, DataHolderNodeType, WithDiagonals>::operator=(GridNodeType&& other) {
         DataHolder = other.DataHolder;
         other.DataHolder = nullptr;
         Coordinates = other.Coordinates;
@@ -47,28 +64,28 @@ namespace Grid {
         return *this;
     }
 
-    template<typename GridNodeType, template <typename NodeType> typename DataHolderNodeType>
-    std::vector<GridNodeType *> BaseGridNode<GridNodeType, DataHolderNodeType>::GetAdditionalNeighbors() const {
+    template<typename GridNodeType, template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    std::vector<GridNodeType *> BaseGridNode<GridNodeType, DataHolderNodeType, WithDiagonals>::GetAdditionalNeighbors() const {
         return DataHolder->GetAdditionalNeighbors();
     }
 
-    template<typename GridNodeType, template <typename NodeType> typename DataHolderNodeType>
-    BaseGridNode<GridNodeType, DataHolderNodeType>::BaseGridNode(Coordinates2D &C, DataHolderNodeType<GridNodeType> *DH) : Coordinates(C), DataHolder(DH) {
+    template<typename GridNodeType, template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    BaseGridNode<GridNodeType, DataHolderNodeType, WithDiagonals>::BaseGridNode(Coordinates2D &C, DataHolderNodeType<GridNodeType, WithDiagonals> *DH) : Coordinates(C), DataHolder(DH) {
 
     }
 
-    template<typename GridNodeType,template <typename NodeType> typename DataHolderNodeType>
-    BaseGridNode<GridNodeType, DataHolderNodeType>::~BaseGridNode() {
+    template<typename GridNodeType,template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    BaseGridNode<GridNodeType, DataHolderNodeType, WithDiagonals>::~BaseGridNode() {
         delete DataHolder;
     }
 
-    template<typename GridNodeType, template <typename NodeType> typename DataHolderNodeType>
-    std::vector<Coordinates2D> BaseGrid<GridNodeType, DataHolderNodeType>::GetNeighborsCoordinates(GridNodeType &Node) {
+    template<typename GridNodeType, template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    std::vector<Coordinates2D> BaseGrid<GridNodeType, DataHolderNodeType, WithDiagonals>::GetNeighborsCoordinates(GridNodeType &Node) {
         return GetNeighborsCoordinates(Node.Coordinates);
     }
 
-    template<typename GridNodeType, template <typename NodeType> typename DataHolderNodeType>
-    void BaseGrid<GridNodeType, DataHolderNodeType>::GenerateNeighbors() {
+    template<typename GridNodeType, template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    void BaseGrid<GridNodeType, DataHolderNodeType, WithDiagonals>::GenerateNeighbors() {
         for (auto & Node : m_Nodes) {
             Node.Neighbors = {};
             for (auto & NeighborCoordinates : GetNeighborsCoordinates(Node)) {
@@ -80,8 +97,8 @@ namespace Grid {
         }
     }
 
-    template<typename GridNodeType, template <typename NodeType> typename DataHolderNodeType>
-    bool BaseGrid<GridNodeType, DataHolderNodeType>::IsInMap(Coordinates2D &Coordinates) const {
+    template<typename GridNodeType, template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    bool BaseGrid<GridNodeType, DataHolderNodeType, WithDiagonals>::IsInMap(Coordinates2D &Coordinates) const {
         return Coordinates.X >= 0 && Coordinates.X < m_Width && Coordinates.Y >= 0 && Coordinates.Y < m_Height;
     }
 } // Grid

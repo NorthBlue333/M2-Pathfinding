@@ -5,25 +5,27 @@
 #include "RenderableGrid.h"
 
 namespace Grid {
-    template <typename BaseSquareGridNodeType, template <typename NodeType> typename DataHolderNodeType>
-    struct BaseSquareGridNode : public BaseGridNode<BaseSquareGridNodeType, DataHolderNodeType> {
-        using BaseGridNode<BaseSquareGridNodeType, DataHolderNodeType>::BaseGridNode;
+    template <typename BaseSquareGridNodeType, template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    struct BaseSquareGridNode : public BaseGridNode<BaseSquareGridNodeType, DataHolderNodeType, WithDiagonals> {
+        using BaseGridNode<BaseSquareGridNodeType, DataHolderNodeType, WithDiagonals>::BaseGridNode;
+
+        bool IsDiagonalFrom(BaseSquareGridNodeType *Neighbor) const override;
     };
 
-    template <template <typename NodeType> typename DataHolderNodeType>
-    struct SquareGridNode : public BaseSquareGridNode<SquareGridNode<DataHolderNodeType>, DataHolderNodeType>
+    template <template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    struct SquareGridNode : public BaseSquareGridNode<SquareGridNode<DataHolderNodeType, WithDiagonals>, DataHolderNodeType, WithDiagonals>
     {
-        using BaseSquareGridNode<SquareGridNode<DataHolderNodeType>, DataHolderNodeType>::BaseSquareGridNode;
+        using BaseSquareGridNode<SquareGridNode<DataHolderNodeType, WithDiagonals>, DataHolderNodeType, WithDiagonals>::BaseSquareGridNode;
     };
 
-    template <typename GridNodeType, template <typename NodeType> typename DataHolderNodeType>
-    class BaseSquareGrid : public BaseGrid<GridNodeType, DataHolderNodeType>
+    template <typename GridNodeType, template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    class BaseSquareGrid : public BaseGrid<GridNodeType, DataHolderNodeType, WithDiagonals>
     {
     public:
         BaseSquareGrid(
                 unsigned int& Width,
                 unsigned int& Height,
-                std::function<DataHolderNodeType<GridNodeType>*(const Coordinates2D& Coordinates)> CreateDataHolderNode = [](const Coordinates2D&) {return nullptr;}
+                std::function<DataHolderNodeType<GridNodeType, WithDiagonals>*(const Coordinates2D& Coordinates)> CreateDataHolderNode = [](const Coordinates2D&) {return nullptr;}
         ) {
             this->CreateNodes(Width, Height, CreateDataHolderNode);
         };
@@ -33,30 +35,31 @@ namespace Grid {
         explicit BaseSquareGrid() = default;
     };
 
-    template <template <typename NodeType> typename DataHolderNodeType>
-    using SquareGrid = BaseSquareGrid<SquareGridNode<DataHolderNodeType>, DataHolderNodeType>;
+    template <template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    using SquareGrid = BaseSquareGrid<SquareGridNode<DataHolderNodeType, WithDiagonals>, DataHolderNodeType, WithDiagonals>;
 
-    template <template <typename NodeType> typename DataHolderNodeType>
-    using RenderableSquareGridNode = RenderableNode<BaseSquareGridNode, DataHolderNodeType>;
+    template <template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    using RenderableSquareGridNode = RenderableNode<BaseSquareGridNode, DataHolderNodeType, WithDiagonals>;
 
-    template <template <typename NodeType> typename DataHolderNodeType>
+    template <template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
     class RenderableSquareGrid :
-            public RenderableGrid<BaseSquareGrid<RenderableSquareGridNode<DataHolderNodeType>, DataHolderNodeType>, RenderableSquareGridNode<DataHolderNodeType>, DataHolderNodeType>
+            public RenderableGrid<BaseSquareGrid<RenderableSquareGridNode<DataHolderNodeType, WithDiagonals>, DataHolderNodeType, WithDiagonals>, RenderableSquareGridNode<DataHolderNodeType, WithDiagonals>, DataHolderNodeType, WithDiagonals>
     {
         static int constexpr MARGIN_BETWEEN_NODES = 1;
     public:
-        using GridNode_T = RenderableSquareGridNode<DataHolderNodeType>;
-        using DataHolder_T = DataHolderNodeType<GridNode_T>;
+        using GridNode_T = RenderableSquareGridNode<DataHolderNodeType, WithDiagonals>;
+        using DataHolder_T = DataHolderNodeType<GridNode_T, WithDiagonals>;
 
         RenderableSquareGrid(
                 unsigned int& Width,
                 unsigned int& Height,
                 const RenderableSize2D& ContainerSize,
-                std::function<DataHolderNodeType<GridNode_T>*(GridNode_T* GridNode, const RenderableCoordinates2D& RenderCoordinates, const RenderableSize2D& RenderSize)> CreateDataHolderNode = [](const RenderableCoordinates2D&, const RenderableSize2D&) {return nullptr;}
+                std::function<DataHolderNodeType<GridNode_T, WithDiagonals>*(GridNode_T* GridNode, const RenderableCoordinates2D& RenderCoordinates, const RenderableSize2D& RenderSize)> CreateDataHolderNode = [](const RenderableCoordinates2D&, const RenderableSize2D&) {return nullptr;}
         ) {
             this->CreateNodes(Width, Height, ContainerSize, CreateDataHolderNode);
         };
 
+        RenderableSize2D GetGridRenderSize(const RenderableSize2D& ContainerSize) const override;
         RenderableSize2D GetNodeRenderSize(const RenderableSize2D& ContainerSize) const override;
         RenderableCoordinates2D GetNodeRenderCoordinates(
                 const Coordinates2D& Coordinates,

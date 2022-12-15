@@ -4,9 +4,7 @@
 #include <vector>
 
 namespace PathFinding {
-    template <typename NodeType>
     struct Node {
-        const NodeType* OriginalNode;
         virtual ~Node() = default;
     };
 
@@ -18,7 +16,7 @@ namespace PathFinding {
 
         virtual std::vector<NodeType*> GetPath(NodeType* Start, NodeType* Target) = 0;
 
-        virtual bool IsNodeBlocked(Node<NodeType>& Node) const;
+        virtual bool IsNodeBlocked(NodeType* Node) const;
     protected:
         const GridType* m_Grid;
     };

@@ -2,13 +2,13 @@
 #define PATHFINDING_MAINMENUSCENE_H
 
 #include "../../../GameEngine/BaseScene.h"
-#include "../../common_types.h"
+#include "../../Game.h"
 #include "MainMenuGameMode.h"
 #include "../../../UserInterface/IButton.h"
 #include "../Traits/HasFonts.h"
 #include <vector>
 
-namespace GameEngineImpl::Scenes {
+namespace GameEngineImpl::Scenes::MainMenu {
     enum struct MainMenuState {
         Main = 0,
         LevelSelect,
@@ -20,7 +20,7 @@ namespace GameEngineImpl::Scenes {
 
     class MainMenuScene : public BaseSceneType<MainMenuScene, MainMenuGameMode, MainMenuGameController>, public Traits::HasFonts<MainMenuFont> {
     public:
-        explicit MainMenuScene(GameType* Game);
+        explicit MainMenuScene(Game* Game);
         ~MainMenuScene() override;
 
         void Load() override;

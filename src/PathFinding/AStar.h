@@ -2,26 +2,27 @@
 #define PATHFINDING_ASTAR_H
 
 #include "Algorithm.h"
+#include <map>
 
 namespace PathFinding {
     template <typename NodeType>
-    // maybe copy coordinates in order to have data in memory? But OriginalNodes are already next to each other?
-    struct AStarNode : public Node<NodeType> {
+    struct AStarNode : public Node {
         int G = 0;
         int H = 0;
 
-//        bool Visited = false;
-        AStarNode* ParentInPath = nullptr;
+        bool Visited = false;
+        NodeType* ParentInPath = nullptr;
 
         int GetScore() const;
-
-        bool operator ==(const AStarNode<NodeType>& Other);
     };
 
     template <typename GridType, typename NodeType>
     class AStar : public Algorithm<GridType, NodeType> {
     public:
+        using Algorithm<GridType, NodeType>::Algorithm;
+
         std::vector<NodeType*> GetPath(NodeType* Start, NodeType* Target) override;
+        AStarNode<NodeType>& GetOrCreateAStartNodeInMap(std::map<NodeType*, AStarNode<NodeType>>& Map, NodeType* Node) const;
     };
 }
 

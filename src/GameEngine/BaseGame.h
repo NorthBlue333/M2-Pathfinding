@@ -1,5 +1,5 @@
-#ifndef PATHFINDING_GAME_H
-#define PATHFINDING_GAME_H
+#ifndef PATHFINDING_BASEGAME_H
+#define PATHFINDING_BASEGAME_H
 
 #include <SFML/Graphics.hpp>
 #include "IScene.h"
@@ -7,20 +7,20 @@
 #include <functional>
 
 namespace GameEngine {
-    template <typename SceneNameEnum>
-    class Game {
+    template <typename GameType, typename SceneNameEnum>
+    class BaseGame {
         static_assert(std::is_enum<SceneNameEnum>::value, "SceneNameEnum must be enum");
     private:
-        using SceneFactoryConstructor = std::function<ISceneFactory<SceneNameEnum>*(Game*)>;
+        using SceneFactoryConstructor = std::function<ISceneFactory<GameType, SceneNameEnum>*(GameType*)>;
     public:
-        Game(
+        BaseGame(
             SceneNameEnum DefaultSceneName,
             SceneFactoryConstructor SceneFactoryConstructor,
             unsigned int WindowWidth = 1200,
             unsigned int WindowHeight = 1000,
             int FixedRateInMillis = 10
         );
-        ~Game();
+        virtual ~BaseGame();
 
         int Run();
         void LoadScene(SceneNameEnum SceneName);
@@ -32,7 +32,7 @@ namespace GameEngine {
         SceneFactoryConstructor m_SceneFactoryConstructor;
         SceneNameEnum m_CurrentSceneName;
         SceneNameEnum m_SceneNameToLoad;
-        IScene<SceneNameEnum>* m_CurrentScene;
+        IScene<GameType, SceneNameEnum>* m_CurrentScene;
 
         unsigned int m_WindowWidth;
         unsigned int m_WindowHeight;
@@ -47,6 +47,6 @@ namespace GameEngine {
     };
 }
 
-#include "Game.tpp"
+#include "BaseGame.tpp"
 
-#endif //PATHFINDING_GAME_H
+#endif //PATHFINDING_BASEGAME_H

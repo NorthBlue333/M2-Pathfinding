@@ -2,9 +2,9 @@
 #include "LevelEditorGameController.h"
 #include "LevelEditorScene.h"
 
-namespace GameEngineImpl::Scenes {
+namespace GameEngineImpl::Scenes::LevelEditor {
     LevelEditorGameController::LevelEditorGameController(
-            GameType *Game,
+            Game *Game,
             LevelEditorScene* Scene,
             LevelEditorGameMode *GameMode
     ) : BaseGameController(

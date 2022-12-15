@@ -2,19 +2,19 @@
 #define PATHFINDING_SCENEFACTORY_H
 
 #include "../../GameEngine/ISceneFactory.h"
-#include "../common_types.h"
+#include "../Game.h"
 
 namespace GameEngineImpl {
     namespace Scenes {
-        class SceneFactory : public GameEngine::ISceneFactory<GameSceneName> {
+        class SceneFactory : public GameEngine::ISceneFactory<Game, GameSceneName> {
         public:
-            explicit SceneFactory(GameType* Game);
+            explicit SceneFactory(Game* Game);
             ~SceneFactory() override = default;
 
-            GameEngine::IScene<GameSceneName>* CreateSceneFromName(GameSceneName Name) override;
+            ISceneType * CreateSceneFromName(GameSceneName Name) override;
         };
 
-        SceneFactory* NewFactory(GameType* Game);
+        SceneFactory* NewFactory(Game* Game);
     }
 
 } // GameEngineImpl

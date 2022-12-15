@@ -1,30 +1,30 @@
 #include "BaseGameMode.h"
 
 namespace GameEngine {
-    template <typename SceneNameEnum, typename SceneType, typename GameModeType, typename GameControllerType>
-    BaseGameMode<SceneNameEnum, SceneType, GameModeType, GameControllerType>::BaseGameMode(Game<SceneNameEnum> *Game, SceneType *Scene) : m_Game(Game), m_Scene(Scene) {
+    template <typename GameType, typename SceneNameEnum, typename SceneType, typename GameModeType, typename GameControllerType>
+    BaseGameMode<GameType, SceneNameEnum, SceneType, GameModeType, GameControllerType>::BaseGameMode(GameType *Game, SceneType *Scene) : m_Game(Game), m_Scene(Scene) {
         m_GameController = InstanciateGameController();
     }
 
-    template <typename SceneNameEnum, typename SceneType, typename GameModeType, typename GameControllerType>
-    void BaseGameMode<SceneNameEnum, SceneType, GameModeType, GameControllerType>::ComputeInputs() {
+    template <typename GameType, typename SceneNameEnum, typename SceneType, typename GameModeType, typename GameControllerType>
+    void BaseGameMode<GameType, SceneNameEnum, SceneType, GameModeType, GameControllerType>::ComputeInputs() {
         m_GameController->ComputeInputs();
     }
 
-    template<typename SceneNameEnum, typename SceneType, typename GameModeType, typename GameControllerType>
+    template<typename GameType, typename SceneNameEnum, typename SceneType, typename GameModeType, typename GameControllerType>
     GameControllerType *
-    BaseGameMode<SceneNameEnum, SceneType, GameModeType, GameControllerType>::InstanciateGameController() {
+    BaseGameMode<GameType, SceneNameEnum, SceneType, GameModeType, GameControllerType>::InstanciateGameController() {
         return new GameControllerType(m_Game, m_Scene, static_cast<GameModeType*>(this));
     }
-    template <typename SceneNameEnum, typename SceneType, typename GameModeType, typename GameControllerType>
-    BaseGameMode<SceneNameEnum, SceneType, GameModeType, GameControllerType>::~BaseGameMode()
+    template <typename GameType, typename SceneNameEnum, typename SceneType, typename GameModeType, typename GameControllerType>
+    BaseGameMode<GameType, SceneNameEnum, SceneType, GameModeType, GameControllerType>::~BaseGameMode()
     {
         delete m_GameController;
     }
 
-    template<typename SceneNameEnum, typename SceneType, typename GameModeType, typename GameControllerType>
+    template<typename GameType, typename SceneNameEnum, typename SceneType, typename GameModeType, typename GameControllerType>
     GameControllerType *
-    BaseGameMode<SceneNameEnum, SceneType, GameModeType, GameControllerType>::GetGameController() const {
+    BaseGameMode<GameType, SceneNameEnum, SceneType, GameModeType, GameControllerType>::GetGameController() const {
         return m_GameController;
     }
 }

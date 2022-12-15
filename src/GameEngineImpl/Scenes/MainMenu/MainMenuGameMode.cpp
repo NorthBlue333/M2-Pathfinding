@@ -1,10 +1,8 @@
 #include "MainMenuGameMode.h"
 #include "MainMenuScene.h"
 
-namespace GameEngineImpl {
-    namespace Scenes {
-        MainMenuGameMode::MainMenuGameMode(GameType *Game, MainMenuScene *Scene) : BaseGameMode(Game, Scene) {
+namespace GameEngineImpl::Scenes::MainMenu {
+    MainMenuGameMode::MainMenuGameMode(Game *Game, MainMenuScene *Scene) : BaseGameMode(Game, Scene) {
 
-        }
-    } // GameEngineImpl
+    }
 } // Scenes

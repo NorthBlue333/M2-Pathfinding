@@ -2,7 +2,7 @@
 #include "LevelEditorGameController.h"
 #include "LevelEditorScene.h"
 
-namespace GameEngineImpl::Scenes {
+namespace GameEngineImpl::Scenes::LevelEditor {
     template <typename DataHolderType>
     void LevelEditorGameController::HandleOnGridButtonClick(UI::IButton *Btn) {
         if (nullptr == m_CurrentNodeTypeButton)

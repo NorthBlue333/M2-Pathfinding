@@ -1,10 +1,8 @@
 #include "LevelEditorGameMode.h"
 #include "LevelEditorScene.h"
 
-namespace GameEngineImpl {
-    namespace Scenes {
-        LevelEditorGameMode::LevelEditorGameMode(GameType *Game, LevelEditorScene *Scene) : BaseGameMode(Game, Scene) {
+namespace GameEngineImpl::Scenes::LevelEditor {
+    LevelEditorGameMode::LevelEditorGameMode(Game *Game, LevelEditorScene *Scene) : BaseGameMode(Game, Scene) {
 
-        }
-    } // GameEngineImpl
+    }
 } // Scenes

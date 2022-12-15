@@ -1,26 +1,24 @@
 #ifndef PATHFINDING_MAINMENUGAMECONTROLLER_H
 #define PATHFINDING_MAINMENUGAMECONTROLLER_H
 
-#include "../../common_types.h"
+#include "../../Game.h"
 #include "../Traits/HasMouseEvents.h"
 
-namespace GameEngineImpl {
-    namespace Scenes {
-        class MainMenuScene;
-        class MainMenuGameMode;
+namespace GameEngineImpl::Scenes::MainMenu {
+    class MainMenuScene;
+    class MainMenuGameMode;
 
-        class MainMenuGameController :
-            public BaseGameControllerType<MainMenuScene, MainMenuGameMode, MainMenuGameController>,
-            public Traits::HasMouseEvents
-        {
-        public:
-            MainMenuGameController(GameType* Game, MainMenuScene* Scene, MainMenuGameMode* GameMode);
-            ~MainMenuGameController() override = default;
+    class MainMenuGameController :
+        public BaseGameControllerType<MainMenuScene, MainMenuGameMode, MainMenuGameController>,
+        public Traits::HasMouseEvents
+    {
+    public:
+        MainMenuGameController(Game* Game, MainMenuScene* Scene, MainMenuGameMode* GameMode);
+        ~MainMenuGameController() override = default;
 
-            void ComputeInputs() override;
-        };
+        void ComputeInputs() override;
+    };
 
-    } // GameEngineImpl
 } // Scenes
 
 #endif //PATHFINDING_MAINMENUGAMECONTROLLER_H

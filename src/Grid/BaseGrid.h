@@ -11,47 +11,54 @@ namespace Grid {
         int Y = 0;
     };
 
-    template <typename DataHolderType, typename GridNodeType>
+    template <typename DataHolderType, typename GridNodeType, bool WithDiagonals>
     class BaseDataHolderType {
     public:
         GridNodeType* Node;
 
+        virtual bool IsBlocked() const;
         virtual std::vector<GridNodeType*> GetAdditionalNeighbors() = 0;
+
         BaseDataHolderType() = default;
         virtual ~BaseDataHolderType() = default;
     };
 
-    template <typename GridNodeType, template<typename NodeType> typename DataHolderNodeType>
+    template <typename GridNodeType, template<typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
     struct BaseGridNode {
         Coordinates2D Coordinates;
         std::vector<GridNodeType*> Neighbors;
-        DataHolderNodeType<GridNodeType>* DataHolder = nullptr;
+        DataHolderNodeType<GridNodeType, WithDiagonals>* DataHolder = nullptr;
+
+        bool IsBlocked() const;
 
         virtual std::vector<GridNodeType*> GetAdditionalNeighbors() const;
+        virtual bool IsDiagonalFrom(GridNodeType* Neighbor) const = 0;
 
-        BaseGridNode(Coordinates2D& C, DataHolderNodeType<GridNodeType>* DH);
+        BaseGridNode(Coordinates2D& C, DataHolderNodeType<GridNodeType, WithDiagonals>* DH);
         virtual ~BaseGridNode();
 
         virtual BaseGridNode& operator =(GridNodeType&& other);
     };
 
     // @todo maybe add templated number of nodes for fixed size array instead of vector
-    template<typename GridNodeType, template<typename NodeType> typename DataHolderNodeType>
+    template<typename GridNodeType, template<typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
     class BaseGrid {
     public:
         using GridNode_T = GridNodeType;
-        using DataHolder_T = DataHolderNodeType<GridNodeType>;
+        using DataHolder_T = DataHolderNodeType<GridNodeType, WithDiagonals>;
 
         void CreateNodes(
                 unsigned int& Width,
                 unsigned int& Height,
-                std::function<DataHolderNodeType<GridNodeType>*(GridNodeType* GridNode, const Coordinates2D& Coordinates)> CreateDataHolderNode = [](const Coordinates2D&) {return nullptr;}
+                std::function<DataHolderNodeType<GridNodeType, WithDiagonals>*(GridNodeType* GridNode, const Coordinates2D& Coordinates)> CreateDataHolderNode = [](const Coordinates2D&) {return nullptr;}
         );
 
         void GenerateNeighbors();
 
         std::vector<Coordinates2D> GetNeighborsCoordinates(GridNodeType& Node);
         virtual std::vector<Coordinates2D> GetNeighborsCoordinates(Coordinates2D& Coordinates) = 0;
+
+        GridNodeType* GetNodeAtCoordinates(Coordinates2D& Coordinates);
 
         std::vector<GridNodeType> const* GetNodes() const;
 

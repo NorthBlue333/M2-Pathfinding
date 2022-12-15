@@ -30,20 +30,20 @@ namespace GridImpl {
         NodeType CurrentNodeType = NodeType::Plain;
     };
 
-    template <template <typename NodeType> typename GridDataHolderType, typename GridNodeType>
-    class GridDataHolder : public IGridDataHolder, public Grid::BaseDataHolderType<GridDataHolderType<GridNodeType>, GridNodeType> {
+    template <template <typename NodeType, bool WithDiagonals> typename GridDataHolderType, typename GridNodeType, bool WithDiagonals>
+    class GridDataHolder : public IGridDataHolder, public Grid::BaseDataHolderType<GridDataHolderType<GridNodeType, WithDiagonals>, GridNodeType, WithDiagonals> {
     public:
         GridDataHolder() = default;
         ~GridDataHolder() override;
 
-        const GridDataHolderType<GridNodeType>* GetLinkedPortal() const;
-        void SetLinkedPortal(GridDataHolderType<GridNodeType>* Linked);
+        const GridDataHolderType<GridNodeType, WithDiagonals>* GetLinkedPortal() const;
+        void SetLinkedPortal(GridDataHolderType<GridNodeType, WithDiagonals>* Linked);
 
         std::vector<GridNodeType*> GetAdditionalNeighbors() override;
 
         void SetCurrentNodeType(NodeType NewType) override;
     protected:
-        GridDataHolderType<GridNodeType>* LinkedPortal = nullptr;
+        GridDataHolderType<GridNodeType, WithDiagonals>* LinkedPortal = nullptr;
     };
 
 } // GridImpl

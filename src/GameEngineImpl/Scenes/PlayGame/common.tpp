@@ -1,6 +1,6 @@
 #include "common.h"
 
-namespace GameEngineImpl::Scenes::LevelEditor {
+namespace GameEngineImpl::Scenes::PlayGame {
     template <typename GridNodeType, bool WithDiagonals>
     void GridDataHolder<GridNodeType, WithDiagonals>::Render(sf::RenderWindow *Window) {
         m_GridNodeButton->Render(Window);
@@ -24,35 +24,5 @@ namespace GameEngineImpl::Scenes::LevelEditor {
     template <typename GridNodeType, bool WithDiagonals>
     void GridDataHolder<GridNodeType, WithDiagonals>::SetTextureFromNodeType() {
         m_GridNodeButton->SetTexture(this->Textures.at(this->CurrentNodeType));
-        m_GridNodeButton->HideOverlay();
-    }
-
-    template<typename DataHolderType>
-    void GridNodeButton<DataHolderType>::HideOverlay() {
-        delete Overlay;
-        Overlay = nullptr;
-    }
-
-    template<typename DataHolderType>
-    void GridNodeButton<DataHolderType>::ShowOverlay() {
-        if (Overlay != nullptr)
-            return;
-        Overlay = new sf::RectangleShape({m_Width, m_Height});
-        Overlay->setFillColor({255, 0, 0, 100});
-        Overlay->setPosition(UI::GridNodeButton::GetPosition());
-    }
-
-    template<typename DataHolderType>
-    void GridNodeButton<DataHolderType>::Render(sf::RenderWindow *Window) {
-        UI::GridNodeButton::Render(Window);
-        if (nullptr != Overlay) {
-            Window->draw(*Overlay);
-        }
-    }
-
-    template<typename DataHolderType>
-    GridNodeButton<DataHolderType>::~GridNodeButton() {
-        delete Overlay;
-        Overlay = nullptr;
     }
 }

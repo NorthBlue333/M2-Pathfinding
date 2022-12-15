@@ -1,68 +1,75 @@
+#include <list>
 #include "AStar.h"
+#include "Heuristic.h"
 
 namespace PathFinding {
-    template<typename NodeType>
+    template <typename NodeType>
     int AStarNode<NodeType>::GetScore() const {
         return G + H;
     }
 
-    template<typename NodeType>
-    bool AStarNode<NodeType>::operator==(const AStarNode<NodeType> &Other) {
-        return this->OriginalNode == Other.OriginalNode;
-    }
-
     template<typename GridType, typename NodeType>
     std::vector<NodeType *> AStar<GridType, NodeType>::GetPath(NodeType *Start, NodeType *Target) {
-        std::vector<AStarNode<NodeType>> openSet;
-        std::vector<NodeType*> closedSet;
-        openSet.reserve(this->m_Grid->GetNodes().size() / 2);
-        closedSet.reserve(this->m_Grid->GetNodes().size() / 2);
+        std::map<NodeType*, AStarNode<NodeType>> AStarNodes;
+        std::list<NodeType*> openSet;
 
-        openSet.emplace_back(Start);
+        openSet.push_back(Start);
 
-        AStarNode<NodeType>* current = nullptr;
+        NodeType* Current = nullptr;
         while (!openSet.empty()) {
             auto current_it = openSet.begin();
-            current = current_it;
+            Current = *current_it;
+            auto CurrentAStarNode = &GetOrCreateAStartNodeInMap(AStarNodes, Current);
 
             // @todo probably better to bubble sort the array and get the last element
             for (auto it = openSet.begin(); it != openSet.end(); ++it) {
-                const auto node = *it;
-                if (node->GetScore() <= current->GetScore()) {
-                    current = node;
+                const auto Node = *it;
+                auto AStarNode = &GetOrCreateAStartNodeInMap(AStarNodes, Node);
+                if (AStarNode->GetScore() <= CurrentAStarNode->GetScore()) {
+                    Current = Node;
                     current_it = it;
+                    CurrentAStarNode = AStarNode;
                 }
-            }
-
-            if (current->OriginalNode == Target) {
-                break;
             }
 
             openSet.erase(current_it);
-            closedSet.push_back(current->OriginalNode);
-            current = &openSet.back();
 
-            for (auto neighbor : current->OriginalNode->Neighbors) {
-                if (!std::find(closedSet.begin(), closedSet.end(), neighbor))
+            CurrentAStarNode->Visited = true;
+
+            if (Current == Target) {
+                break;
+            }
+
+            for (auto Neighbor : Current->Neighbors) {
+                auto AStarNode = &GetOrCreateAStartNodeInMap(AStarNodes, Neighbor);
+                if (!AStarNode->Visited)
                 {
-                    // @todo extract to method on OriginalNode
-                    const bool b_diagonal = current->OriginalNode->Coordinates.X != neighbor->Coordinates.X && current->OriginalNode->Coordinates.Y != neighbor->Coordinates.Y;
-                    const auto total_cost = current->G + (b_diagonal ? 14 : 10);
-                    openSet.emplace_back(neighbor);
-                    auto Last = openSet.back();
-                    Last.ParentInPath = current;
-                    Last.G = total_cost;
-                    Last.H = heuristic(neighbor, Target);
+                    const bool b_diagonal = Neighbor->IsDiagonalFrom(Current);
+                    const auto total_cost = CurrentAStarNode->G + (b_diagonal ? 14 : 10);
+                    openSet.push_back(Neighbor);
+                    AStarNode->ParentInPath = Current;
+                    AStarNode->G = total_cost;
+                    AStarNode->H = Heuristic::Euclidean(Neighbor->Coordinates, Target->Coordinates);
+                    AStarNode->Visited = true;
                 }
             }
         }
 
-        std::vector<NodeType*> path;
-        while (current != nullptr) {
-            path.push_back(current->OriginalNode);
-            current = current->ParentInPath;
+        std::vector<NodeType*> FinalPath;
+        while (Current != nullptr) {
+            FinalPath.push_back(Current);
+            Current = AStarNodes.contains(Current) ? AStarNodes[Current].ParentInPath : nullptr;
         }
 
-        return path;
+        return FinalPath;
+    }
+
+    template<typename GridType, typename NodeType>
+    AStarNode<NodeType> &AStar<GridType, NodeType>::GetOrCreateAStartNodeInMap(std::map<NodeType *, AStarNode<NodeType>>& Map, NodeType* Node) const {
+        if (!Map.contains(Node)) {
+            Map.insert({Node, {}});
+        }
+
+        return Map[Node];
     }
 }

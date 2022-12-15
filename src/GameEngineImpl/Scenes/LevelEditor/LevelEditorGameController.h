@@ -1,12 +1,12 @@
 #ifndef PATHFINDING_LEVELEDITORGAMECONTROLLER_H
 #define PATHFINDING_LEVELEDITORGAMECONTROLLER_H
 
-#include "../../common_types.h"
+#include "../../Game.h"
 #include "../Traits/HasMouseEvents.h"
 #include "../../../GridImpl/GridsWithPortals.h"
 #include "common.h"
 
-namespace GameEngineImpl::Scenes {
+namespace GameEngineImpl::Scenes::LevelEditor {
     class LevelEditorScene;
     class LevelEditorGameMode;
 
@@ -15,7 +15,7 @@ namespace GameEngineImpl::Scenes {
         public Traits::HasMouseEvents
     {
     public:
-        LevelEditorGameController(GameType* Game, LevelEditorScene* Scene, LevelEditorGameMode* GameMode);
+        LevelEditorGameController(Game* Game, LevelEditorScene* Scene, LevelEditorGameMode* GameMode);
         ~LevelEditorGameController() override = default;
 
         void ComputeInputs() override;

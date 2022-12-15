@@ -1,22 +1,19 @@
-#ifndef PATHFINDING_LEVELEDITORSCENE_H
-#define PATHFINDING_LEVELEDITORSCENE_H
+#ifndef PATHFINDING_PLAYGAMESCENE_H
+#define PATHFINDING_PLAYGAMESCENE_H
 
 #include "../../../GameEngine/BaseScene.h"
 #include "../../Game.h"
+#include "PlayGameGameMode.h"
 #include "../../../UserInterface/IButton.h"
-#include "../../../UserInterface/TextButton.h"
-#include "../Traits/HasTextures.h"
 #include "../Traits/HasFonts.h"
-#include "../../../UserInterface/SquareSpriteButton.h"
-#include "../../../GridImpl/GridsWithPortals.h"
-#include "LevelEditorGameMode.h"
-#include "LevelEditorGameController.h"
+#include "../../../UserInterface/TextButton.h"
 #include "common.h"
+#include "Player.h"
+#include "../Traits/HasTextures.h"
 #include <vector>
-#include <map>
 
-namespace GameEngineImpl::Scenes::LevelEditor {
-    enum struct LevelEditorTextureName {
+namespace GameEngineImpl::Scenes::PlayGame {
+    enum struct PlayGameTextureName {
         FilledSquare = 0,
         FilledHexagon,
         OutlinedSquare,
@@ -26,51 +23,56 @@ namespace GameEngineImpl::Scenes::LevelEditor {
         FlagSquare,
         FlagHexagon
     };
-
-    enum struct LevelEditorFont {
+    
+    enum struct PlayGameFont {
         AnekDevanagari = 0,
     };
 
-    enum struct LevelEditorGridType {
+    enum struct PlayGameGridType {
         Square = 0,
         Hexagonal,
     };
 
-    class LevelEditorScene :
-            public BaseSceneType<LevelEditorScene, LevelEditorGameMode, LevelEditorGameController>,
-            public Traits::HasTextures<LevelEditorTextureName>,
-            public Traits::HasFonts<LevelEditorFont>
+    class PlayGameScene :
+        public BaseSceneType<PlayGameScene, PlayGameGameMode, PlayGameGameController>, public Traits::HasFonts<PlayGameFont>,
+        public Traits::HasTextures<PlayGameTextureName>
     {
         union GridType {
             SquareGridType* SquareGrid = nullptr;
             HexagonalGridType* HexagonalGrid;
         };
-
     public:
-        explicit LevelEditorScene(Game* Game);
-        ~LevelEditorScene() override;
+        explicit PlayGameScene(Game* Game);
+        ~PlayGameScene() override;
 
         void Load() override;
         void ExecuteCalculations(sf::Time Elapsed) override;
         void Render() override;
-        void SetCurrentGridType(LevelEditorGridType NewGridType);
 
         std::vector<UI::IButton*> GetButtons();
+
+        const PlayGameGridType& GetCurrentGridType() const;
+        HexagonalGridType* GetHexagonalGrid() const;
+        SquareGridType* GetSquareGrid() const;
+
+        Player* GetPlayer() const;
     protected:
+        static int constexpr TITLE_TEXT_SIZE = 30;
         static int constexpr BUTTON_TEXT_SIZE = 30;
         static int constexpr BUTTON_WIDTH = 100;
         static int constexpr BUTTON_HEIGHT = 120;
         static int constexpr BUTTON_MARGIN = 10;
 
-        sf::Text Title;
-        UI::TextButton* m_BackButton;
-        std::vector<UI::TextButton*> m_GridTypeButtons;
-        std::vector<UI::IButton*> m_EditorButtons;
-
-        LevelEditorGridType m_CurrentGridType = LevelEditorGridType::Square;
+        PlayGameGridType m_CurrentGridType = PlayGameGridType::Square;
         GridType m_Grid;
 
         void CreateGrid();
+
+        sf::Text m_Title;
+        UI::TextButton* m_BackButton;
+        Player* m_Player;
+
+        void SetTitle(const sf::String &Text);
 
         HexagonalGridType::DataHolder_T * CreateHexagonalGridDataHolder(
             HexagonalGridType::GridNode_T * GridNode,
@@ -89,17 +91,11 @@ namespace GameEngineImpl::Scenes::LevelEditor {
             const Grid::RenderableSize2D& RenderSize
         );
 
-        void ResetNodeTypeButtons();
-
-        NodeTypeButton* AddButton(
-                const sf::Texture *Texture,
-                const sf::String& Name,
-                GridImpl::NodeType
-        );
+        void SetPlayerPositionFromGridSize(Grid::RenderableSize2D GridSize, Grid::RenderableSize2D NodeSize);
     };
 
 } // Scenes
 
-#include "LevelEditorScene.tpp"
+#include "PlayGameScene.tpp"
 
-#endif //PATHFINDING_LEVELEDITORSCENE_H
+#endif //PATHFINDING_PLAYGAMESCENE_H

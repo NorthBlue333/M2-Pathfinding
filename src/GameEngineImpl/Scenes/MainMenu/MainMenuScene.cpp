@@ -2,8 +2,8 @@
 #include "../../../UserInterface/TextButton.h"
 #include <iostream>
 
-namespace GameEngineImpl::Scenes {
-    MainMenuScene::MainMenuScene(GameType *Game) : BaseScene(Game), m_Title(sf::Text()) {
+namespace GameEngineImpl::Scenes::MainMenu {
+    MainMenuScene::MainMenuScene(Game *Game) : BaseScene(Game), m_Title(sf::Text()) {
 
     }
 
@@ -68,7 +68,9 @@ namespace GameEngineImpl::Scenes {
 
     void MainMenuScene::ShowMainState() {
         SetTitle("Main menu");
-        AddButton("Select level", [this](auto && Btn) { ChangeCurrentState(MainMenuState::LevelSelect); });
+        // @todo temporary
+//        AddButton("Select level", [this](auto && Btn) { ChangeCurrentState(MainMenuState::LevelSelect); });
+        AddButton("Select level", [this](auto && Btn) { m_Game->LoadScene(GameSceneName::PlayGame); });
         AddButton("Level editor", [this](auto && Btn) { m_Game->LoadScene(GameSceneName::LevelEditor); });
         AddButton("Quit", [this](auto && Btn) { m_Game->StopGame(); });
     }

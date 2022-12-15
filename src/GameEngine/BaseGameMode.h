@@ -5,22 +5,17 @@
 #include "BaseGameController.h"
 
 namespace GameEngine {
-    template <typename SceneNameEnum>
-    class Game;
-    template <typename SceneNameEnum, typename SceneType, typename GameModeType, typename GameControllerType>
-    class BaseScene;
-
-    template <typename SceneNameEnum, typename SceneType, typename GameModeType, typename GameControllerType>
+    template <typename GameType, typename SceneNameEnum, typename SceneType, typename GameModeType, typename GameControllerType>
     class BaseGameMode {
     public:
-        explicit BaseGameMode(Game<SceneNameEnum>* Game, SceneType* Scene);
+        explicit BaseGameMode(GameType* Game, SceneType* Scene);
         virtual ~BaseGameMode();
 
         void ComputeInputs();
 
         GameControllerType* GetGameController() const;
     protected:
-        Game<SceneNameEnum>* m_Game;
+        GameType* m_Game;
         SceneType* m_Scene;
         GameControllerType* m_GameController;
 

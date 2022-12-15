@@ -1,5 +1,5 @@
 #pragma once
-#include "Node.h"
+#include <cmath>
 
 namespace PathFinding
 {
@@ -12,26 +12,26 @@ namespace PathFinding
         };
     public:
 
-        static Position GetDelta(const Node* source, const Node* target)
+        static Position GetDelta(const Grid::Coordinates2D& Source, const Grid::Coordinates2D& Target)
         {
-            return{ abs(source->x - target->x), abs(source->y - target->y) };
+            return { abs(Source.X - Target.X), abs(Source.Y - Target.Y) };
         }
 
-        static int Manhattan(const Node* source, const Node* target)
+        static int Manhattan(const Grid::Coordinates2D& Source, const Grid::Coordinates2D& Target)
         {
-            const auto delta = GetDelta(source, target);
+            const auto delta = GetDelta(Source, Target);
             return 10 * (delta.x + delta.y);
         }
 
-        static int Euclidean(const Node* source, const Node* target)
+        static int Euclidean(const Grid::Coordinates2D& Source, const Grid::Coordinates2D& Target)
         {
-            const auto delta = GetDelta(source, target);
-            return sqrt(pow(delta.x, 2) + pow(delta.y, 2)) * 10;
+            const auto delta = GetDelta(Source, Target);
+            return std::sqrt(std::pow(delta.x, 2) + std::pow(delta.y, 2)) * 10;
         }
 
-        static int Octagonal(const Node* source, const Node* target)
+        static int Octagonal(const Grid::Coordinates2D& Source, const Grid::Coordinates2D& Target)
         {
-            const auto delta = GetDelta(source, target);
+            const auto delta = GetDelta(Source, Target);
             return 10 * (delta.x + delta.y) + (-6) * std::min(delta.x, delta.y);
         }
 

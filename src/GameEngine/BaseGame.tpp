@@ -1,8 +1,8 @@
-#include "Game.h"
+#include "BaseGame.h"
 
 namespace GameEngine {
-    template<typename SceneNameEnum>
-    Game<SceneNameEnum>::Game(SceneNameEnum DefaultSceneName, Game::SceneFactoryConstructor SceneFactoryConstructor,
+    template<typename GameType, typename SceneNameEnum>
+    BaseGame<GameType, SceneNameEnum>::BaseGame(SceneNameEnum DefaultSceneName, BaseGame<GameType, SceneNameEnum>::SceneFactoryConstructor SceneFactoryConstructor,
                               unsigned int WindowWidth, unsigned int WindowHeight,
                               int FixedRateInMillis) :
             m_SceneFactoryConstructor(SceneFactoryConstructor),
@@ -17,8 +17,8 @@ namespace GameEngine {
         ExecuteLoadScene();
     }
 
-    template<typename SceneNameEnum>
-    int Game<SceneNameEnum>::Run() {
+    template<typename GameType, typename SceneNameEnum>
+    int BaseGame<GameType, SceneNameEnum>::Run() {
         sf::Clock clock;
         while (m_Window.isOpen()) {
             sf::Time Elapsed = clock.restart();
@@ -37,24 +37,24 @@ namespace GameEngine {
         return 0;
     }
 
-    template<typename SceneNameEnum>
-    void Game<SceneNameEnum>::ComputeInputs() {
+    template<typename GameType, typename SceneNameEnum>
+    void BaseGame<GameType, SceneNameEnum>::ComputeInputs() {
         if (nullptr == m_CurrentScene)
             return;
 
         m_CurrentScene->ComputeInputs();
     }
 
-    template<typename SceneNameEnum>
-    void Game<SceneNameEnum>::ExecuteCalculations(sf::Time Elapsed) {
+    template<typename GameType, typename SceneNameEnum>
+    void BaseGame<GameType, SceneNameEnum>::ExecuteCalculations(sf::Time Elapsed) {
         if (nullptr == m_CurrentScene)
             return;
 
         m_CurrentScene->ExecuteCalculations(Elapsed);
     }
 
-    template<typename SceneNameEnum>
-    void Game<SceneNameEnum>::Render() {
+    template<typename GameType, typename SceneNameEnum>
+    void BaseGame<GameType, SceneNameEnum>::Render() {
         if (nullptr == m_CurrentScene)
             return;
 
@@ -65,30 +65,30 @@ namespace GameEngine {
         m_Window.display();
     }
 
-    template<typename SceneNameEnum>
-    sf::RenderWindow *Game<SceneNameEnum>::GetWindow() {
+    template<typename GameType, typename SceneNameEnum>
+    sf::RenderWindow *BaseGame<GameType, SceneNameEnum>::GetWindow() {
         return &m_Window;
     }
 
     /// Will load scene at next tick
-    template<typename SceneNameEnum>
-    void Game<SceneNameEnum>::LoadScene(SceneNameEnum SceneName) {
+    template<typename GameType, typename SceneNameEnum>
+    void BaseGame<GameType, SceneNameEnum>::LoadScene(SceneNameEnum SceneName) {
         m_SceneNameToLoad = SceneName;
     }
 
-    template<typename SceneNameEnum>
-    Game<SceneNameEnum>::~Game() {
+    template<typename GameType, typename SceneNameEnum>
+    BaseGame<GameType, SceneNameEnum>::~BaseGame() {
         delete m_CurrentScene;
     }
 
-    template<typename SceneNameEnum>
-    void Game<SceneNameEnum>::StopGame() {
+    template<typename GameType, typename SceneNameEnum>
+    void BaseGame<GameType, SceneNameEnum>::StopGame() {
         m_Window.close();
     }
 
-    template<typename SceneNameEnum>
-    void Game<SceneNameEnum>::ExecuteLoadScene() {
-        auto Factory = std::invoke(m_SceneFactoryConstructor, this);
+    template<typename GameType, typename SceneNameEnum>
+    void BaseGame<GameType, SceneNameEnum>::ExecuteLoadScene() {
+        auto Factory = std::invoke(m_SceneFactoryConstructor, static_cast<GameType*>(this));
         auto newScene = Factory->CreateSceneFromName(m_SceneNameToLoad);
         newScene->Load();
         delete m_CurrentScene;

@@ -6,8 +6,8 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(
         pathfinding
         src/main.cpp
-        src/GameEngine/Game.h
-        src/GameEngine/Game.tpp
+        src/GameEngine/BaseGame.h
+        src/GameEngine/BaseGame.tpp
         src/GameEngine/BaseGameMode.h
         src/GameEngine/BaseGameMode.tpp
         src/GameEngine/BaseGameController.h
@@ -48,14 +48,12 @@ add_executable(
         src/Grid/HexagonalGrid.h src/Grid/SquareGrid.h src/Grid/SquareGrid.tpp
         src/Grid/HexagonalGrid.cpp
         src/UserInterface/GridNodeButton.h src/UserInterface/GridNodeButton.cpp
-        src/PathFinding/Graph.cpp
-        src/PathFinding/Graph.h src/PathFinding/GraphFactory.cpp
-        src/PathFinding/GraphFactory.h src/PathFinding/Heuristic.h src/PathFinding/Node.cpp
-        src/PathFinding/Node.h src/GameEngineImpl/Scenes/LevelEditor/LevelEditorScene.tpp src/GridImpl/GridsWithPortals.tpp src/GridImpl/GridsWithPortals.h src/GridImpl/GridWithPortals.cpp
+        src/PathFinding/Heuristic.h
+        src/GameEngineImpl/Scenes/LevelEditor/LevelEditorScene.tpp src/GridImpl/GridsWithPortals.tpp src/GridImpl/GridsWithPortals.h src/GridImpl/GridWithPortals.cpp
         src/PathFinding/Algorithm.tpp src/PathFinding/Algorithm.h src/PathFinding/AStar.h src/GameEngineImpl/Scenes/Traits/HasMouseEvents.cpp
         src/GameEngineImpl/Scenes/Traits/HasMouseEvents.h
         src/GameEngineImpl/Scenes/LevelEditor/common.h src/GameEngineImpl/Scenes/LevelEditor/common.tpp
-        src/GameEngineImpl/Scenes/LevelEditor/LevelEditorGameController.tpp src/PathFinding/AStar.tpp)
+        src/GameEngineImpl/Scenes/LevelEditor/LevelEditorGameController.tpp src/PathFinding/AStar.tpp src/GameEngineImpl/Scenes/PlayGame/PlayGameGameController.cpp src/GameEngineImpl/Scenes/PlayGame/PlayGameGameController.h src/GameEngineImpl/Scenes/PlayGame/PlayGameGameMode.cpp src/GameEngineImpl/Scenes/PlayGame/PlayGameGameMode.h src/GameEngineImpl/Scenes/PlayGame/PlayGameScene.cpp src/GameEngineImpl/Scenes/PlayGame/PlayGameScene.h src/GameEngineImpl/Game.cpp src/GameEngineImpl/Game.h src/GameEngineImpl/Scenes/PlayGame/common.h src/GameEngineImpl/Scenes/PlayGame/common.tpp src/GameEngineImpl/Scenes/PlayGame/Player.cpp src/GameEngineImpl/Scenes/PlayGame/Player.h src/GameEngineImpl/Scenes/PlayGame/PlayGameScene.tpp)
 
 file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
 

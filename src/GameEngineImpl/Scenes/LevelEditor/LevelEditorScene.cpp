@@ -1,7 +1,7 @@
 #include "LevelEditorScene.h"
 
-namespace GameEngineImpl::Scenes {
-    LevelEditorScene::LevelEditorScene(GameType *Game) : BaseScene(Game), m_BackButton(nullptr) {
+namespace GameEngineImpl::Scenes::LevelEditor {
+    LevelEditorScene::LevelEditorScene(Game *Game) : BaseScene(Game), m_BackButton(nullptr) {
     }
 
     void LevelEditorScene::ExecuteCalculations(sf::Time Elapsed) {

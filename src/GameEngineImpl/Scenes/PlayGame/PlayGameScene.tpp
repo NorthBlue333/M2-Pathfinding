@@ -1,8 +1,8 @@
-#include "LevelEditorScene.h"
+#include "PlayGameScene.h"
 
-namespace GameEngineImpl::Scenes::LevelEditor {
+namespace GameEngineImpl::Scenes::PlayGame {
     template <typename DataHolderType>
-    DataHolderType *LevelEditorScene::FillGridDataHolder(
+    DataHolderType *PlayGameScene::FillGridDataHolder(
             std::map<GridImpl::NodeType, sf::Texture *> &Textures,
             const Grid::RenderableCoordinates2D& RenderCoordinates,
             const Grid::RenderableSize2D& RenderSize
@@ -16,19 +16,8 @@ namespace GameEngineImpl::Scenes::LevelEditor {
         // @todo correct position
         NewBtn->SetPosition(BUTTON_MARGIN + RenderCoordinates.X, 70 + RenderCoordinates.Y);
         NewBtn->SetOnClick([this](auto && Btn) {
-            m_GameMode->GetGameController()->HandleOnGridButtonClick<DataHolderType>(Btn);
+            m_GameMode->GetGameController()->HandleOnGridButtonClick(static_cast<GridNodeButton<DataHolderType>*>(Btn)->DataHolder->Node->Coordinates, Btn);
         });
-        NewBtn->SetOnDragOver([this](auto && Btn) {
-            m_GameMode->GetGameController()->HandleOnGridButtonClick<DataHolderType>(Btn);
-        });
-        NewBtn->SetOnHover(
-            [this](auto && Btn) {
-                m_GameMode->GetGameController()->HandleOnGridButtonHoverStart<DataHolderType>(Btn);
-            },
-            [this](auto && Btn) {
-                m_GameMode->GetGameController()->HandleOnGridButtonHoverEnd<DataHolderType>(Btn);
-            }
-        );
         NewBtn->DataHolder = DataHolder;
         DataHolder->SetGridNodeButton(NewBtn);
         DataHolder->SetTextures(Textures);

@@ -11,26 +11,28 @@ namespace Grid {
         int CalculateS() const;
     };
 
-    template <typename BaseHexagonalGridNodeType, template <typename NodeType> typename DataHolderNodeType>
-    struct BaseHexagonalGridNode : public BaseGridNode<BaseHexagonalGridNodeType, DataHolderNodeType> {
-        using BaseGridNode<BaseHexagonalGridNodeType, DataHolderNodeType>::BaseGridNode;
+    template <typename BaseHexagonalGridNodeType, template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    struct BaseHexagonalGridNode : public BaseGridNode<BaseHexagonalGridNodeType, DataHolderNodeType, WithDiagonals> {
+        using BaseGridNode<BaseHexagonalGridNodeType, DataHolderNodeType, WithDiagonals>::BaseGridNode;
+
+        bool IsDiagonalFrom(BaseHexagonalGridNodeType *Neighbor) const override;
     };
 
-    template <template <typename NodeType> typename DataHolderNodeType>
-    struct HexagonalGridNode : public BaseHexagonalGridNode<HexagonalGridNode<DataHolderNodeType>, DataHolderNodeType>
+    template <template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    struct HexagonalGridNode : public BaseHexagonalGridNode<HexagonalGridNode<DataHolderNodeType, WithDiagonals>, DataHolderNodeType, WithDiagonals>
     {
-        using BaseHexagonalGridNode<HexagonalGridNode<DataHolderNodeType>, DataHolderNodeType>::BaseHexagonalGridNode;
+        using BaseHexagonalGridNode<HexagonalGridNode<DataHolderNodeType, WithDiagonals>, DataHolderNodeType, WithDiagonals>::BaseHexagonalGridNode;
     };
 
     // use Odd-R coordinates 2D
-    template <typename GridNodeType, template <typename NodeType> typename DataHolderNodeType>
-    class BaseHexagonalGrid : public BaseGrid<GridNodeType, DataHolderNodeType>
+    template <typename GridNodeType, template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    class BaseHexagonalGrid : public BaseGrid<GridNodeType, DataHolderNodeType, WithDiagonals>
     {
     public:
         BaseHexagonalGrid(
                 unsigned int& Width,
                 unsigned int& Height,
-                std::function<DataHolderNodeType<GridNodeType>*(const Coordinates2D& Coordinates)> CreateDataHolderNode = [](const Coordinates2D&) {return nullptr;}
+                std::function<DataHolderNodeType<GridNodeType, WithDiagonals>*(const Coordinates2D& Coordinates)> CreateDataHolderNode = [](const Coordinates2D&) {return nullptr;}
         ) {
             this->CreateNodes(Width, Height, CreateDataHolderNode);
         };
@@ -43,29 +45,30 @@ namespace Grid {
         explicit BaseHexagonalGrid() = default;
     };
 
-    template <template <typename NodeType> typename DataHolderNodeType>
-    using HexagonalGrid = BaseHexagonalGrid<HexagonalGridNode<DataHolderNodeType>, DataHolderNodeType>;
+    template <template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    using HexagonalGrid = BaseHexagonalGrid<HexagonalGridNode<DataHolderNodeType, WithDiagonals>, DataHolderNodeType, WithDiagonals>;
 
-    template <template <typename NodeType> typename DataHolderNodeType>
-    using RenderableHexagonalGridNode = RenderableNode<BaseHexagonalGridNode, DataHolderNodeType>;
+    template <template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
+    using RenderableHexagonalGridNode = RenderableNode<BaseHexagonalGridNode, DataHolderNodeType, WithDiagonals>;
 
-    template <template <typename NodeType> typename DataHolderNodeType>
+    template <template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
     class RenderableHexagonalGrid :
-            public RenderableGrid<BaseHexagonalGrid<RenderableHexagonalGridNode<DataHolderNodeType>, DataHolderNodeType>, RenderableHexagonalGridNode<DataHolderNodeType>, DataHolderNodeType>
+            public RenderableGrid<BaseHexagonalGrid<RenderableHexagonalGridNode<DataHolderNodeType, WithDiagonals>, DataHolderNodeType, WithDiagonals>, RenderableHexagonalGridNode<DataHolderNodeType, WithDiagonals>, DataHolderNodeType, WithDiagonals>
     {
     public:
-        using GridNode_T = RenderableHexagonalGridNode<DataHolderNodeType>;
-        using DataHolder_T = DataHolderNodeType<GridNode_T>;
+        using GridNode_T = RenderableHexagonalGridNode<DataHolderNodeType, WithDiagonals>;
+        using DataHolder_T = DataHolderNodeType<GridNode_T, WithDiagonals>;
 
         RenderableHexagonalGrid(
                 unsigned int& Width,
                 unsigned int& Height,
                 const RenderableSize2D& ContainerSize,
-                std::function<DataHolderNodeType<GridNode_T >*(GridNode_T* GridNode, const RenderableCoordinates2D& RenderCoordinates, const RenderableSize2D& RenderSize)> CreateDataHolderNode = [](GridNode_T* GridNode, const RenderableCoordinates2D&, const RenderableSize2D&) {return nullptr;}
+                std::function<DataHolderNodeType<GridNode_T, WithDiagonals>*(GridNode_T* GridNode, const RenderableCoordinates2D& RenderCoordinates, const RenderableSize2D& RenderSize)> CreateDataHolderNode = [](GridNode_T* GridNode, const RenderableCoordinates2D&, const RenderableSize2D&) {return nullptr;}
         ) {
             this->CreateNodes(Width, Height, ContainerSize, CreateDataHolderNode);
         };
 
+        RenderableSize2D GetGridRenderSize(const RenderableSize2D& ContainerSize) const override;
         RenderableSize2D GetNodeRenderSize(const RenderableSize2D& ContainerSize) const override;
         RenderableCoordinates2D GetNodeRenderCoordinates(
                 const Coordinates2D& Coordinates,

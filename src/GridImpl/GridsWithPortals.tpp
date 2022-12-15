@@ -1,9 +1,9 @@
 #include "GridsWithPortals.h"
 
 namespace GridImpl {
-    template <template <typename NodeType> typename GridDataHolderType, typename GridNodeType>
+    template <template <typename NodeType, bool WithDiagonals> typename GridDataHolderType, typename GridNodeType, bool WithDiagonals>
     void
-    GridDataHolder<GridDataHolderType, GridNodeType>::SetCurrentNodeType(NodeType NewType) {
+    GridDataHolder<GridDataHolderType, GridNodeType, WithDiagonals>::SetCurrentNodeType(NodeType NewType) {
         if (CurrentNodeType == NewType)
             return;
         SetLinkedPortal(nullptr);
@@ -11,13 +11,13 @@ namespace GridImpl {
         SetTextureFromNodeType();
     }
 
-    template <template <typename NodeType> typename GridDataHolderType, typename GridNodeType>
-    const GridDataHolderType<GridNodeType>* GridDataHolder<GridDataHolderType, GridNodeType>::GetLinkedPortal() const {
+    template <template <typename NodeType, bool WithDiagonals> typename GridDataHolderType, typename GridNodeType, bool WithDiagonals>
+    const GridDataHolderType<GridNodeType, WithDiagonals>* GridDataHolder<GridDataHolderType, GridNodeType, WithDiagonals>::GetLinkedPortal() const {
         return LinkedPortal;
     }
 
-    template <template <typename NodeType> typename GridDataHolderType, typename GridNodeType>
-    void GridDataHolder<GridDataHolderType, GridNodeType>::SetLinkedPortal(GridDataHolderType<GridNodeType> *Linked) {
+    template <template <typename NodeType, bool WithDiagonals> typename GridDataHolderType, typename GridNodeType, bool WithDiagonals>
+    void GridDataHolder<GridDataHolderType, GridNodeType, WithDiagonals>::SetLinkedPortal(GridDataHolderType<GridNodeType, WithDiagonals> *Linked) {
         if (CurrentNodeType != NodeType::Portal)
             return;
 
@@ -27,7 +27,7 @@ namespace GridImpl {
         auto OldPortal = LinkedPortal;
         LinkedPortal = Linked;
         if (nullptr != LinkedPortal)
-            LinkedPortal->LinkedPortal = static_cast<GridDataHolderType<GridNodeType>*>(this);
+            LinkedPortal->LinkedPortal = static_cast<GridDataHolderType<GridNodeType, WithDiagonals>*>(this);
 
         if (nullptr != OldPortal) {
             if (OldPortal->LinkedPortal == this)
@@ -36,16 +36,16 @@ namespace GridImpl {
         }
     }
 
-    template <template <typename NodeType> typename GridDataHolderType, typename GridNodeType>
-    std::vector<GridNodeType *> GridDataHolder<GridDataHolderType, GridNodeType>::GetAdditionalNeighbors() {
+    template <template <typename NodeType, bool WithDiagonals> typename GridDataHolderType, typename GridNodeType, bool WithDiagonals>
+    std::vector<GridNodeType *> GridDataHolder<GridDataHolderType, GridNodeType, WithDiagonals>::GetAdditionalNeighbors() {
         if (CurrentNodeType != NodeType::Portal || LinkedPortal == nullptr)
             return {};
 
         return {LinkedPortal->Node};
     }
 
-    template <template <typename NodeType> typename GridDataHolderType, typename GridNodeType>
-    GridDataHolder<GridDataHolderType, GridNodeType>::~GridDataHolder()  {
+    template <template <typename NodeType, bool WithDiagonals> typename GridDataHolderType, typename GridNodeType, bool WithDiagonals>
+    GridDataHolder<GridDataHolderType, GridNodeType, WithDiagonals>::~GridDataHolder()  {
         SetLinkedPortal(nullptr);
     }
 } // GridImpl

@@ -1,5 +1,5 @@
-#ifndef PATHFINDING_LEVELEDITOR_COMMON_H
-#define PATHFINDING_LEVELEDITOR_COMMON_H
+#ifndef PATHFINDING_PLAYGAME_COMMON_H
+#define PATHFINDING_PLAYGAME_COMMON_H
 
 #include "../../../UserInterface/GridNodeButton.h"
 #include "../../../Grid/HexagonalGrid.h"
@@ -7,25 +7,11 @@
 #include "../../../GridImpl/GridsWithPortals.h"
 #include "../../../UserInterface/SquareSpriteButton.h"
 
-namespace GameEngineImpl::Scenes::LevelEditor {
-    class NodeTypeButton : public UI::SquareSpriteButton {
-        using UI::SquareSpriteButton::SquareSpriteButton;
-
-    public:
-        GridImpl::NodeType TargetNodeType;
-    };
-
+namespace GameEngineImpl::Scenes::PlayGame {
     template <typename DataHolderType>
     class GridNodeButton : public UI::GridNodeButton {
         using UI::GridNodeButton::GridNodeButton;
-
-        sf::RectangleShape* Overlay = nullptr;
-
     public:
-        void ShowOverlay();
-        void HideOverlay();
-        void Render(sf::RenderWindow *Window) override;
-        ~GridNodeButton() override;
         DataHolderType* DataHolder;
     };
 
@@ -47,10 +33,9 @@ namespace GameEngineImpl::Scenes::LevelEditor {
     };
 
     using HexagonalGridType = Grid::RenderableHexagonalGrid<GridDataHolder, false>;
-    // @todo add SquareGridTypeWithDiagonals
     using SquareGridType = Grid::RenderableSquareGrid<GridDataHolder, false>;
 }
 
 #include "common.tpp"
 
-#endif //PATHFINDING_LEVELEDITOR_COMMON_H
+#endif //PATHFINDING_PLAYGAME_COMMON_H

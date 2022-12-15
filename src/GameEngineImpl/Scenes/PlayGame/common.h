@@ -11,7 +11,12 @@ namespace GameEngineImpl::Scenes::PlayGame {
     template <typename DataHolderType>
     class GridNodeButton : public UI::GridNodeButton {
         using UI::GridNodeButton::GridNodeButton;
+        sf::RectangleShape* Overlay = nullptr;
     public:
+        void ShowOverlay();
+        void HideOverlay();
+        void Render(sf::RenderWindow* Window) override;
+        ~GridNodeButton() override;
         DataHolderType* DataHolder;
     };
 

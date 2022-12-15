@@ -33,21 +33,36 @@ namespace GameEngineImpl::Scenes::PlayGame {
     }
 
     void PlayGameGameController::HandleOnGridButtonClick(Grid::Coordinates2D& TargetNodeCoordinates, UI::IButton *Btn) {
-        auto PlayerCoordinates = m_Scene->GetPlayer()->GetCoordinates();
+    	auto PlayerCoordinates = m_Scene->GetPlayer()->GetCoordinates();
         // @todo maybe do this compile time but conflict with ForwardRef of Scene
         if (m_Scene->GetCurrentGridType() == PlayGameGridType::Square) {
             auto Grid = m_Scene->GetSquareGrid();
             PathFinding::AStar<SquareGridType, SquareGridType::GridNode_T> AStar(Grid);
             auto Path = AStar.GetPath(Grid->GetNodeAtCoordinates(PlayerCoordinates), Grid->GetNodeAtCoordinates(TargetNodeCoordinates));
+
+            // Remove previous overlays
+        	auto Nodes = Grid->GetNodes();
+        	for (auto& node : *Nodes)
+		    {
+				node.DataHolder->GetGridNodeButton()->HideOverlay();
+		    }
+            // Add overlay for the path
             for (const auto & Node : Path) {
-                std::cout << Node->Coordinates.X << " " << Node->Coordinates.Y << std::endl;
+                Node->DataHolder->GetGridNodeButton()->ShowOverlay();
             }
         } else {
             auto Grid = m_Scene->GetHexagonalGrid();
             PathFinding::AStar<HexagonalGridType, HexagonalGridType::GridNode_T> AStar(Grid);
             auto Path = AStar.GetPath(Grid->GetNodeAtCoordinates(PlayerCoordinates), Grid->GetNodeAtCoordinates(TargetNodeCoordinates));
-            for (const auto & Node : Path) {
-                std::cout << Node->Coordinates.X << " " << Node->Coordinates.Y << std::endl;
+            // Remove previous overlays
+            auto Nodes = Grid->GetNodes();
+            for (auto& node : *Nodes)
+            {
+                node.DataHolder->GetGridNodeButton()->HideOverlay();
+            }
+            // Add overlay for the path
+            for (const auto& Node : Path) {
+                Node->DataHolder->GetGridNodeButton()->ShowOverlay();
             }
         }
     }

@@ -203,7 +203,7 @@ namespace GameEngineImpl::Scenes::LevelEditor {
             AddButton(m_Textures.at(LevelEditorTextureName::OutlinedHexagon), "Empty", GridImpl::NodeType::Empty);
             AddButton(m_Textures.at(LevelEditorTextureName::FilledHexagon), "Plain", GridImpl::NodeType::Plain);
             AddButton(m_Textures.at(LevelEditorTextureName::PortalHexagon), "Portal", GridImpl::NodeType::Portal);
-            AddButton(m_Textures.at(LevelEditorTextureName::PortalHexagon), "Player start", GridImpl::NodeType::PlayerStart);
+            AddButton(m_Textures.at(LevelEditorTextureName::FlagHexagon), "Player start", GridImpl::NodeType::PlayerStart);
         }
     }
 

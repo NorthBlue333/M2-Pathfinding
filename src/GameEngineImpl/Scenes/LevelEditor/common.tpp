@@ -12,7 +12,7 @@ namespace GameEngineImpl::Scenes::LevelEditor {
     }
 
     template <typename GridNodeType, bool WithDiagonals>
-    GridDataHolder<GridNodeType, WithDiagonals>::GridNodeButtonType *GridDataHolder<GridNodeType, WithDiagonals>::GetGridNodeButton() const {
+    typename GridDataHolder<GridNodeType, WithDiagonals>::GridNodeButtonType *GridDataHolder<GridNodeType, WithDiagonals>::GetGridNodeButton() const {
         return m_GridNodeButton;
     }
 

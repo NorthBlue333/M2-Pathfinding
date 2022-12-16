@@ -33,7 +33,6 @@ namespace GameEngineImpl::Scenes::PlayGame {
     }
 
     void PlayGameGameController::HandleOnGridButtonClick(Grid::Coordinates2D& TargetNodeCoordinates, UI::IButton *Btn) {
-        SaveNodes();
     	auto PlayerCoordinates = m_Scene->GetPlayer()->GetCoordinates();
         // @todo maybe do this compile time but conflict with ForwardRef of Scene
         if (m_Scene->GetCurrentGridType() == PlayGameGridType::Square) {

@@ -1,4 +1,5 @@
 #include <list>
+#include <algorithm>
 #include "AStar.h"
 #include "Heuristic.h"
 
@@ -61,6 +62,7 @@ namespace PathFinding {
             Current = AStarNodes.contains(Current) ? AStarNodes[Current].ParentInPath : nullptr;
         }
 
+        std::reverse(FinalPath.begin(), FinalPath.end());
         return FinalPath;
     }
 

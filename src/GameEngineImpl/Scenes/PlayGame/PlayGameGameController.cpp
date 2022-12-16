@@ -39,7 +39,7 @@ namespace GameEngineImpl::Scenes::PlayGame {
             auto Grid = m_Scene->GetSquareGrid();
             PathFinding::AStar<SquareGridType, SquareGridType::GridNode_T> AStar(Grid);
             auto Path = AStar.GetPath(Grid->GetNodeAtCoordinates(PlayerCoordinates), Grid->GetNodeAtCoordinates(TargetNodeCoordinates));
-
+            Path.erase(Path.begin());
             // Remove previous overlays
         	auto Nodes = Grid->GetNodes();
         	for (auto& node : *Nodes)
@@ -54,6 +54,8 @@ namespace GameEngineImpl::Scenes::PlayGame {
             auto Grid = m_Scene->GetHexagonalGrid();
             PathFinding::AStar<HexagonalGridType, HexagonalGridType::GridNode_T> AStar(Grid);
             auto Path = AStar.GetPath(Grid->GetNodeAtCoordinates(PlayerCoordinates), Grid->GetNodeAtCoordinates(TargetNodeCoordinates));
+            Path.erase(Path.begin());
+
             // Remove previous overlays
             auto Nodes = Grid->GetNodes();
             for (auto& node : *Nodes)

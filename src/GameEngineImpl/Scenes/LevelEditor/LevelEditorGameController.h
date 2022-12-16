@@ -5,6 +5,7 @@
 #include "../Traits/HasMouseEvents.h"
 #include "../../../GridImpl/GridsWithPortals.h"
 #include "common.h"
+#include "../../../Utilities/SaveUtilities.h"
 
 namespace GameEngineImpl::Scenes::LevelEditor {
     class LevelEditorScene;
@@ -30,10 +31,12 @@ namespace GameEngineImpl::Scenes::LevelEditor {
         void HandleOnNodeTypeButtonClick(UI::IButton *Btn);
 
         void ResetNodeTypeButtons();
+        void SaveNodes();
     private:
         NodeTypeButton* m_CurrentNodeTypeButton = nullptr;
         GridImpl::IGridDataHolder * m_LastPortal = nullptr;
         GridImpl::IGridDataHolder * m_PlayerStart = nullptr;
+        Utilities::SaveUtilities SaveUtils;
     };
 
 } // Scenes

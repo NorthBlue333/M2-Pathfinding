@@ -1,14 +1,15 @@
 #ifndef PATHFINDING_SAVEUTILITIES_H
 #define PATHFINDING_SAVEUTILITIES_H
 
-
 #include <string>
 #include <vector>
 #include <fstream>
 #include <iostream>
 #include <filesystem>
 #include <SFML/Graphics/Image.hpp>
-#include "../GameEngineImpl/Scenes/PlayGame/PlayGameScene.h"
+#include "../GameEngineImpl/common_types.h"
+#include "../Grid/BaseGrid.h"
+#include "../GridImpl/GridsWithPortals.h"
 
 namespace Utilities {
     class SaveUtilities {
@@ -18,24 +19,16 @@ namespace Utilities {
         ~SaveUtilities();
 
         void SaveGame();
+        void TakeScreenshot();
+        std::vector<GameEngineImpl::SavedData> LoadSave(const std::string &pathFile, GameEngineImpl::GridType& GridType);
+        sf::Image GetScreenshotResult(const std::string &saveName);
+        std::vector<std::string> GetSavesFileList();
 
-        //void SaveGame(GameEngineImpl::Scenes::PlayGame::PlayGameGridType typeGrid, GridImpl::NodeType typeNode,
-        //              Grid::Coordinates2D coordinatesNode);
-
-        void takeScreenshot();
-
-        void getSaveInformation(const std::string &pathFile);
-
-        sf::Image getScreenshotResult(const std::string &saveName);
-
-        std::vector<std::string> getSavesFileList();
-
-
+        GameEngineImpl::GridType GridType;
+        std::vector<GameEngineImpl::SavedData> DataToSave;
     private:
-        void checkFolder();
-
-    protected:
-        std::string saveFolderPath = "../src/Saves";
+        void CheckFolder();
+        std::string saveFolderPath = "../Saves";
         sf::Image Screenshot;
     };
 }

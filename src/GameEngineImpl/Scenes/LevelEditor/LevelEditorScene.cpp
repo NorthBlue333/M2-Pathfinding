@@ -19,9 +19,9 @@ namespace GameEngineImpl::Scenes::LevelEditor {
             button->Render(Window);
         }
 
-        if (m_CurrentGridType == LevelEditorGridType::Square) {
+        if (m_CurrentGridType == GameEngineImpl::GridType::Square) {
             m_Grid.SquareGrid->Render(Window);
-        } else if (m_CurrentGridType == LevelEditorGridType::Hexagonal) {
+        } else if (m_CurrentGridType == GameEngineImpl::GridType::Hexagonal) {
             m_Grid.HexagonalGrid->Render(Window);
         }
     }
@@ -54,20 +54,20 @@ namespace GameEngineImpl::Scenes::LevelEditor {
 
         m_SaveButton = new UI::TextButton("Save game", *newFont);
         m_SaveButton->SetPosition(m_SaveButton->GetPosition().x + 300, m_SaveButton->GetPosition().y + 10);
-        m_SaveButton->SetOnClick([this](auto && Btn) { Save_Utils.SaveGame(); });
+        m_SaveButton->SetOnClick([this](auto && Btn) { m_GameMode->GetGameController()->SaveNodes(); });
 
         const auto WindowSize = m_Game->GetWindow()->getSize();
         auto hexaTypeButton = new UI::TextButton("HexaType", *newFont);
         // @todo compute position correctly maybe
         hexaTypeButton->SetPosition(WindowSize.x - 200, WindowSize.y - 50);
-        hexaTypeButton->SetOnClick([this](auto && Btn) { SetCurrentGridType(LevelEditorGridType::Hexagonal); });
+        hexaTypeButton->SetOnClick([this](auto && Btn) { SetCurrentGridType(GameEngineImpl::GridType::Hexagonal); });
         m_GridTypeButtons.push_back(hexaTypeButton);
         auto squareTypeButton = new UI::TextButton("SquareType", *newFont);
         squareTypeButton->SetPosition(WindowSize.x - 200, WindowSize.y - 100);
-        squareTypeButton->SetOnClick([this](auto && Btn) { SetCurrentGridType(LevelEditorGridType::Square); });
+        squareTypeButton->SetOnClick([this](auto && Btn) { SetCurrentGridType(GameEngineImpl::GridType::Square); });
         m_GridTypeButtons.push_back(squareTypeButton);
 
-        SetCurrentGridType(LevelEditorGridType::Square);
+        SetCurrentGridType(GameEngineImpl::GridType::Square);
     }
 
     LevelEditorScene::~LevelEditorScene() {
@@ -84,10 +84,10 @@ namespace GameEngineImpl::Scenes::LevelEditor {
         }
         m_GridTypeButtons = {};
 
-        if (m_CurrentGridType == LevelEditorGridType::Hexagonal) {
+        if (m_CurrentGridType == GameEngineImpl::GridType::Hexagonal) {
             delete m_Grid.HexagonalGrid;
             m_Grid.HexagonalGrid = nullptr;
-        } else if (m_CurrentGridType == LevelEditorGridType::Square) {
+        } else if (m_CurrentGridType == GameEngineImpl::GridType::Square) {
             delete m_Grid.SquareGrid;
             m_Grid.SquareGrid = nullptr;
         }
@@ -100,12 +100,12 @@ namespace GameEngineImpl::Scenes::LevelEditor {
         for (auto Btn : m_GridTypeButtons) {
             buttons.push_back(Btn);
         }
-        if (m_CurrentGridType == LevelEditorGridType::Square) {
+        if (m_CurrentGridType == GameEngineImpl::GridType::Square) {
             auto Nodes = m_Grid.SquareGrid->GetNodes();
             for (auto & Node : *Nodes) {
                 buttons.push_back(Node.DataHolder->GetGridNodeButton());
             }
-        } else if (m_CurrentGridType == LevelEditorGridType::Hexagonal) {
+        } else if (m_CurrentGridType == GameEngineImpl::GridType::Hexagonal) {
             auto Nodes = m_Grid.HexagonalGrid->GetNodes();
             for (auto & Node : *Nodes) {
                 buttons.push_back(Node.DataHolder->GetGridNodeButton());
@@ -175,7 +175,7 @@ namespace GameEngineImpl::Scenes::LevelEditor {
         const auto HeightToRemove = BackBtnBounds.height + BackBtnBounds.top + (BUTTON_MARGIN * 6) + BUTTON_HEIGHT;
         const auto ContainerHeight = static_cast<unsigned int>(std::max(WindowSize.y - HeightToRemove, 0.f));
         const auto ContainerWidth = WindowSize.x - (BUTTON_MARGIN * 2);
-        if (m_CurrentGridType == LevelEditorGridType::Square) {
+        if (m_CurrentGridType == GameEngineImpl::GridType::Square) {
             m_Grid.SquareGrid = new SquareGridType(
                 GridWidth,
                 GridHeight,
@@ -184,7 +184,7 @@ namespace GameEngineImpl::Scenes::LevelEditor {
                     return CreateSquareGridDataHolder(GridNode, RenderCoordinates, RenderSize);
                 }
             );
-        } else if (m_CurrentGridType == LevelEditorGridType::Hexagonal) {
+        } else if (m_CurrentGridType == GameEngineImpl::GridType::Hexagonal) {
             m_Grid.HexagonalGrid = new HexagonalGridType(
                 GridWidth,
                 GridHeight,
@@ -196,17 +196,17 @@ namespace GameEngineImpl::Scenes::LevelEditor {
         }
     }
 
-    void LevelEditorScene::SetCurrentGridType(LevelEditorGridType NewGridType) {
+    void LevelEditorScene::SetCurrentGridType(GameEngineImpl::GridType NewGridType) {
         m_CurrentGridType = NewGridType;
         ResetNodeTypeButtons();
         CreateGrid();
 
-        if (m_CurrentGridType == LevelEditorGridType::Square) {
+        if (m_CurrentGridType == GameEngineImpl::GridType::Square) {
             AddButton(m_Textures.at(LevelEditorTextureName::OutlinedSquare), "Empty", GridImpl::NodeType::Empty);
             AddButton(m_Textures.at(LevelEditorTextureName::FilledSquare), "Plain", GridImpl::NodeType::Plain);
             AddButton(m_Textures.at(LevelEditorTextureName::PortalSquare), "Portal", GridImpl::NodeType::Portal);
             AddButton(m_Textures.at(LevelEditorTextureName::FlagSquare), "Player start", GridImpl::NodeType::PlayerStart);
-        } else if (m_CurrentGridType == LevelEditorGridType::Hexagonal) {
+        } else if (m_CurrentGridType == GameEngineImpl::GridType::Hexagonal) {
             AddButton(m_Textures.at(LevelEditorTextureName::OutlinedHexagon), "Empty", GridImpl::NodeType::Empty);
             AddButton(m_Textures.at(LevelEditorTextureName::FilledHexagon), "Plain", GridImpl::NodeType::Plain);
             AddButton(m_Textures.at(LevelEditorTextureName::PortalHexagon), "Portal", GridImpl::NodeType::Portal);
@@ -222,5 +222,17 @@ namespace GameEngineImpl::Scenes::LevelEditor {
         m_EditorButtons = {};
 
         m_GameMode->GetGameController()->ResetNodeTypeButtons();
+    }
+
+    const GameEngineImpl::GridType &LevelEditorScene::GetCurrentGridType() const {
+        return m_CurrentGridType;
+    }
+
+    HexagonalGridType *LevelEditorScene::GetHexagonalGrid() const {
+        return m_Grid.HexagonalGrid;
+    }
+
+    SquareGridType *LevelEditorScene::GetSquareGrid() const {
+        return m_Grid.SquareGrid;
     }
 } // Scenes

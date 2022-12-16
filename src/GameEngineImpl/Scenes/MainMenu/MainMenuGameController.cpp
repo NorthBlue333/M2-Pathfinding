@@ -28,5 +28,15 @@ namespace GameEngineImpl::Scenes::MainMenu {
             auto Buttons = m_Scene->GetButtons();
             HandleOnMouseLeft(event, Buttons);
         }
+        auto MouseCoords = Window->mapPixelToCoords(sf::Mouse::getPosition(*Window));
+        auto Buttons = m_Scene->GetButtons();
+        HandleOnMouseHover(MouseCoords, Buttons);
+    }
+
+    void MainMenuGameController::LoadSave() {
+        GameEngineImpl::GridType SavedType;
+        auto Data = SaveUtils.LoadSave("../Saves/save.txt", SavedType);
+        m_Game->LoadedGridType = SavedType;
+        m_Game->LoadedSavedData = Data;
     }
 } // Scenes

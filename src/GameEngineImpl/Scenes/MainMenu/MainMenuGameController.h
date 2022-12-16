@@ -3,6 +3,7 @@
 
 #include "../../Game.h"
 #include "../Traits/HasMouseEvents.h"
+#include "../../../Utilities/SaveUtilities.h"
 
 namespace GameEngineImpl::Scenes::MainMenu {
     class MainMenuScene;
@@ -17,6 +18,10 @@ namespace GameEngineImpl::Scenes::MainMenu {
         ~MainMenuGameController() override = default;
 
         void ComputeInputs() override;
+
+        void LoadSave();
+    private:
+        Utilities::SaveUtilities SaveUtils;
     };
 
 } // Scenes

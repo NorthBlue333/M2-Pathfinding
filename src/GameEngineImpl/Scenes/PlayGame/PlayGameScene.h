@@ -28,11 +28,6 @@ namespace GameEngineImpl::Scenes::PlayGame {
         AnekDevanagari = 0,
     };
 
-    enum struct PlayGameGridType {
-        Square = 0,
-        Hexagonal,
-    };
-
     class PlayGameScene :
         public BaseSceneType<PlayGameScene, PlayGameGameMode, PlayGameGameController>, public Traits::HasFonts<PlayGameFont>,
         public Traits::HasTextures<PlayGameTextureName>
@@ -51,7 +46,7 @@ namespace GameEngineImpl::Scenes::PlayGame {
 
         std::vector<UI::IButton*> GetButtons();
 
-        const PlayGameGridType& GetCurrentGridType() const;
+        const GameEngineImpl::GridType& GetCurrentGridType() const;
         HexagonalGridType* GetHexagonalGrid() const;
         SquareGridType* GetSquareGrid() const;
 
@@ -63,7 +58,7 @@ namespace GameEngineImpl::Scenes::PlayGame {
         static int constexpr BUTTON_HEIGHT = 120;
         static int constexpr BUTTON_MARGIN = 10;
 
-        PlayGameGridType m_CurrentGridType = PlayGameGridType::Square;
+        GameEngineImpl::GridType m_CurrentGridType = GameEngineImpl::GridType::Square;
         GridType m_Grid;
 
         void CreateGrid();

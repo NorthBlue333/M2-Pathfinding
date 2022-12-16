@@ -53,9 +53,18 @@ add_executable(
         src/PathFinding/Algorithm.tpp src/PathFinding/Algorithm.h src/PathFinding/AStar.h src/GameEngineImpl/Scenes/Traits/HasMouseEvents.cpp
         src/GameEngineImpl/Scenes/Traits/HasMouseEvents.h
         src/GameEngineImpl/Scenes/LevelEditor/common.h src/GameEngineImpl/Scenes/LevelEditor/common.tpp
-        src/GameEngineImpl/Scenes/LevelEditor/LevelEditorGameController.tpp src/PathFinding/AStar.tpp src/GameEngineImpl/Scenes/PlayGame/PlayGameGameController.cpp src/GameEngineImpl/Scenes/PlayGame/PlayGameGameController.h src/GameEngineImpl/Scenes/PlayGame/PlayGameGameMode.cpp src/GameEngineImpl/Scenes/PlayGame/PlayGameGameMode.h src/GameEngineImpl/Scenes/PlayGame/PlayGameScene.cpp src/GameEngineImpl/Scenes/PlayGame/PlayGameScene.h src/GameEngineImpl/Game.cpp src/GameEngineImpl/Game.h src/GameEngineImpl/Scenes/PlayGame/common.h src/GameEngineImpl/Scenes/PlayGame/common.tpp src/GameEngineImpl/Scenes/PlayGame/Player.cpp src/GameEngineImpl/Scenes/PlayGame/Player.h src/GameEngineImpl/Scenes/PlayGame/PlayGameScene.tpp)
+        src/GameEngineImpl/Scenes/LevelEditor/LevelEditorGameController.tpp src/PathFinding/AStar.tpp src/GameEngineImpl/Scenes/PlayGame/PlayGameGameController.cpp src/GameEngineImpl/Scenes/PlayGame/PlayGameGameController.h src/GameEngineImpl/Scenes/PlayGame/PlayGameGameMode.cpp src/GameEngineImpl/Scenes/PlayGame/PlayGameGameMode.h src/GameEngineImpl/Scenes/PlayGame/PlayGameScene.cpp src/GameEngineImpl/Scenes/PlayGame/PlayGameScene.h src/GameEngineImpl/Game.cpp src/GameEngineImpl/Game.h src/GameEngineImpl/Scenes/PlayGame/common.h src/GameEngineImpl/Scenes/PlayGame/common.tpp src/GameEngineImpl/Scenes/PlayGame/Player.cpp src/GameEngineImpl/Scenes/PlayGame/Player.h src/GameEngineImpl/Scenes/PlayGame/PlayGameScene.tpp src/Utilities/SaveUtilities.cpp)
 
 file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
 
 find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
 target_link_libraries(pathfinding PRIVATE sfml-system sfml-network sfml-graphics sfml-window)
+
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+
+# uncomment this line to show warnings
+# set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")

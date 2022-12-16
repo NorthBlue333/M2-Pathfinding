@@ -50,7 +50,7 @@ namespace PathFinding {
                     openSet.push_back(Neighbor);
                     AStarNode->ParentInPath = Current;
                     AStarNode->G = total_cost;
-                    AStarNode->H = Heuristic::Euclidean(Neighbor->Coordinates, Target->Coordinates);
+                    AStarNode->H = Heuristic::Manhattan(Neighbor->Coordinates, Target->Coordinates);
                     AStarNode->Visited = true;
                 }
             }

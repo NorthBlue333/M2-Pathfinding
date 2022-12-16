@@ -60,4 +60,31 @@ namespace GameEngineImpl::Scenes::LevelEditor {
         CastedBtn->ToggleActive(true);
         m_CurrentNodeTypeButton = CastedBtn;
     }
+
+    void LevelEditorGameController::SaveNodes() {
+        SaveUtils.DataToSave = {};
+        SaveUtils.GridType = m_Scene->GetCurrentGridType();
+        if (m_Scene->GetCurrentGridType() == GameEngineImpl::GridType::Square) {
+            auto Grid = m_Scene->GetSquareGrid();
+            auto Nodes = Grid->GetNodes();
+            for (auto &node: *Nodes) {
+                if (node.DataHolder->GetCurrentNodeType() == GridImpl::NodeType::Portal) {
+                    SaveUtils.DataToSave.push_back({node.Coordinates, node.DataHolder->GetCurrentNodeType(), node.DataHolder->GetLinkedPortal()->Node->Coordinates});
+                } else {
+                    SaveUtils.DataToSave.push_back({node.Coordinates, node.DataHolder->GetCurrentNodeType()});
+                }
+            }
+        } else if (m_Scene->GetCurrentGridType() == GameEngineImpl::GridType::Hexagonal) {
+            auto Grid = m_Scene->GetHexagonalGrid();
+            auto Nodes = Grid->GetNodes();
+            for (auto &node: *Nodes) {
+                if (node.DataHolder->GetCurrentNodeType() == GridImpl::NodeType::Portal) {
+                    SaveUtils.DataToSave.push_back({node.Coordinates, node.DataHolder->GetCurrentNodeType(), node.DataHolder->GetLinkedPortal()->Node->Coordinates});
+                } else {
+                    SaveUtils.DataToSave.push_back({node.Coordinates, node.DataHolder->GetCurrentNodeType()});
+                }
+            }
+        }
+        SaveUtils.SaveGame();
+    }
 } // Scenes

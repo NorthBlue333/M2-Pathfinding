@@ -9,7 +9,6 @@
 #include "../Traits/HasFonts.h"
 #include "../../../UserInterface/SquareSpriteButton.h"
 #include "../../../GridImpl/GridsWithPortals.h"
-#include "../../../Utilities/SaveUtilities.h"
 #include "LevelEditorGameMode.h"
 #include "LevelEditorGameController.h"
 #include "common.h"
@@ -32,11 +31,6 @@ namespace GameEngineImpl::Scenes::LevelEditor {
         AnekDevanagari = 0,
     };
 
-    enum struct LevelEditorGridType {
-        Square = 0,
-        Hexagonal,
-    };
-
     class LevelEditorScene :
             public BaseSceneType<LevelEditorScene, LevelEditorGameMode, LevelEditorGameController>,
             public Traits::HasTextures<LevelEditorTextureName>,
@@ -54,9 +48,13 @@ namespace GameEngineImpl::Scenes::LevelEditor {
         void Load() override;
         void ExecuteCalculations(sf::Time Elapsed) override;
         void Render() override;
-        void SetCurrentGridType(LevelEditorGridType NewGridType);
+        void SetCurrentGridType(GameEngineImpl::GridType NewGridType);
 
         std::vector<UI::IButton*> GetButtons();
+
+        const GameEngineImpl::GridType& GetCurrentGridType() const;
+        HexagonalGridType* GetHexagonalGrid() const;
+        SquareGridType* GetSquareGrid() const;
     protected:
         static int constexpr BUTTON_TEXT_SIZE = 30;
         static int constexpr BUTTON_WIDTH = 100;
@@ -69,9 +67,8 @@ namespace GameEngineImpl::Scenes::LevelEditor {
         std::vector<UI::TextButton*> m_GridTypeButtons;
         std::vector<UI::IButton*> m_EditorButtons;
 
-        LevelEditorGridType m_CurrentGridType = LevelEditorGridType::Square;
+        GameEngineImpl::GridType m_CurrentGridType = GameEngineImpl::GridType::Square;
         GridType m_Grid;
-        Utilities::SaveUtilities Save_Utils;
 
         void CreateGrid();
 

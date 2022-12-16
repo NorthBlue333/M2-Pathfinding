@@ -16,9 +16,9 @@ namespace GameEngineImpl::Scenes::PlayGame {
         auto Window = m_Game->GetWindow();
         m_BackButton->Render(Window);
 
-        if (m_CurrentGridType == PlayGameGridType::Square) {
+        if (m_CurrentGridType == GameEngineImpl::GridType::Square) {
             m_Grid.SquareGrid->Render(Window);
-        } else if (m_CurrentGridType == PlayGameGridType::Hexagonal) {
+        } else if (m_CurrentGridType == GameEngineImpl::GridType::Hexagonal) {
             m_Grid.HexagonalGrid->Render(Window);
         }
 
@@ -51,7 +51,6 @@ namespace GameEngineImpl::Scenes::PlayGame {
         m_BackButton->SetPosition(10, 10);
         m_BackButton->SetOnClick([this](auto && Btn) { m_Game->LoadScene(GameSceneName::MainMenu); });
 
-        // @todo Load set level instead
         CreateGrid();
     }
 
@@ -63,12 +62,12 @@ namespace GameEngineImpl::Scenes::PlayGame {
     std::vector<UI::IButton*> PlayGameScene::GetButtons() {
         std::vector<UI::IButton*> buttons{};
         buttons.push_back(m_BackButton);
-        if (m_CurrentGridType == PlayGameGridType::Square) {
+        if (m_CurrentGridType == GameEngineImpl::GridType::Square) {
             auto Nodes = m_Grid.SquareGrid->GetNodes();
             for (auto & Node : *Nodes) {
                 buttons.push_back(Node.DataHolder->GetGridNodeButton());
             }
-        } else if (m_CurrentGridType == PlayGameGridType::Hexagonal) {
+        } else if (m_CurrentGridType == GameEngineImpl::GridType::Hexagonal) {
             auto Nodes = m_Grid.HexagonalGrid->GetNodes();
             for (auto & Node : *Nodes) {
                 buttons.push_back(Node.DataHolder->GetGridNodeButton());
@@ -124,10 +123,11 @@ namespace GameEngineImpl::Scenes::PlayGame {
         const auto ContainerHeight = static_cast<unsigned int>(std::max(WindowSize.y - HeightToRemove, 0.f));
         const auto ContainerWidth = WindowSize.x - (BUTTON_MARGIN * 2);
 
-        // @todo set correct position for player with player start
+        m_CurrentGridType = m_Game->LoadedGridType;
+
         m_Player = new Player({0, 0});
 
-        if (m_CurrentGridType == PlayGameGridType::Square) {
+        if (m_CurrentGridType == GameEngineImpl::GridType::Square) {
             m_Grid.SquareGrid = new SquareGridType(
                 GridWidth,
                 GridHeight,
@@ -137,7 +137,7 @@ namespace GameEngineImpl::Scenes::PlayGame {
                 }
             );
 
-            for (const auto & Data : m_Game->m_LoadedGridDataHolder) {
+            for (const auto & Data : m_Game->LoadedSavedData) {
                 auto Node = m_Grid.SquareGrid->GetNodeAtCoordinates(Data.Coordinates);
                 Node->DataHolder->SetCurrentNodeType(Data.NodeType);
                 if (GridImpl::NodeType::Portal == Data.NodeType) {
@@ -158,7 +158,7 @@ namespace GameEngineImpl::Scenes::PlayGame {
             );
 
             m_Grid.SquareGrid->GenerateNeighbors();
-        } else if (m_CurrentGridType == PlayGameGridType::Hexagonal) {
+        } else if (m_CurrentGridType == GameEngineImpl::GridType::Hexagonal) {
             m_Grid.HexagonalGrid = new HexagonalGridType(
                 GridWidth,
                 GridHeight,
@@ -168,7 +168,7 @@ namespace GameEngineImpl::Scenes::PlayGame {
                 }
             );
 
-            for (const auto & Data : m_Game->m_LoadedGridDataHolder) {
+            for (const auto & Data : m_Game->LoadedSavedData) {
                 auto Node = m_Grid.HexagonalGrid->GetNodeAtCoordinates(Data.Coordinates);
                 Node->DataHolder->SetCurrentNodeType(Data.NodeType);
                 if (GridImpl::NodeType::Portal == Data.NodeType) {
@@ -215,7 +215,7 @@ namespace GameEngineImpl::Scenes::PlayGame {
         return m_Grid.SquareGrid;
     }
 
-    const PlayGameGridType &PlayGameScene::GetCurrentGridType() const {
+    const GameEngineImpl::GridType &PlayGameScene::GetCurrentGridType() const {
         return m_CurrentGridType;
     }
 

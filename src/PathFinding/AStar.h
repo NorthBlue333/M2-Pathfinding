@@ -22,7 +22,7 @@ namespace PathFinding {
         using Algorithm<GridType, NodeType>::Algorithm;
 
         std::vector<NodeType*> GetPath(NodeType* Start, NodeType* Target) override;
-        AStarNode<NodeType>& GetOrCreateAStartNodeInMap(std::map<NodeType*, AStarNode<NodeType>>& Map, NodeType* Node) const;
+        AStarNode<NodeType>& GetOrCreateAStarNodeInMap(std::map<NodeType*, AStarNode<NodeType>>& Map, NodeType* Node) const;
     };
 }
 

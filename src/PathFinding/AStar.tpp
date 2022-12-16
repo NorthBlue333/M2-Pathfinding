@@ -20,12 +20,12 @@ namespace PathFinding {
         while (!openSet.empty()) {
             auto current_it = openSet.begin();
             Current = *current_it;
-            auto CurrentAStarNode = &GetOrCreateAStartNodeInMap(AStarNodes, Current);
+            auto CurrentAStarNode = &GetOrCreateAStarNodeInMap(AStarNodes, Current);
 
             // @todo probably better to bubble sort the array and get the last element
             for (auto it = openSet.begin(); it != openSet.end(); ++it) {
                 const auto Node = *it;
-                auto AStarNode = &GetOrCreateAStartNodeInMap(AStarNodes, Node);
+                auto AStarNode = &GetOrCreateAStarNodeInMap(AStarNodes, Node);
                 if (AStarNode->GetScore() <= CurrentAStarNode->GetScore()) {
                     Current = Node;
                     current_it = it;
@@ -42,7 +42,7 @@ namespace PathFinding {
             }
 
             for (auto Neighbor : Current->Neighbors) {
-                auto AStarNode = &GetOrCreateAStartNodeInMap(AStarNodes, Neighbor);
+                auto AStarNode = &GetOrCreateAStarNodeInMap(AStarNodes, Neighbor);
                 if (!AStarNode->Visited && !this->IsNodeBlocked(Neighbor))
                 {
                     const bool b_diagonal = Neighbor->IsDiagonalFrom(Current);
@@ -67,7 +67,7 @@ namespace PathFinding {
     }
 
     template<typename GridType, typename NodeType>
-    AStarNode<NodeType> &AStar<GridType, NodeType>::GetOrCreateAStartNodeInMap(std::map<NodeType *, AStarNode<NodeType>>& Map, NodeType* Node) const {
+    AStarNode<NodeType> &AStar<GridType, NodeType>::GetOrCreateAStarNodeInMap(std::map<NodeType *, AStarNode<NodeType>>& Map, NodeType* Node) const {
         if (!Map.contains(Node)) {
             Map.insert({Node, {}});
         }

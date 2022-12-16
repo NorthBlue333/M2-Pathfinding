@@ -32,6 +32,8 @@ namespace GameEngineImpl::Scenes::PlayGame {
         GridNodeButtonType* GetGridNodeButton() const;
 
         void Render(sf::RenderWindow *Window) override;
+
+        bool IsBlocked() const override;
     protected:
         void SetTextureFromNodeType() override;
         GridNodeButton<GridDataHolder>* m_GridNodeButton = nullptr;

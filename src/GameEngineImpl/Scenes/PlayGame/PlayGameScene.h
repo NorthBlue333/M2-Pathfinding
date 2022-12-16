@@ -68,11 +68,8 @@ namespace GameEngineImpl::Scenes::PlayGame {
 
         void CreateGrid();
 
-        sf::Text m_Title;
         UI::TextButton* m_BackButton;
         Player* m_Player;
-
-        void SetTitle(const sf::String &Text);
 
         HexagonalGridType::DataHolder_T * CreateHexagonalGridDataHolder(
             HexagonalGridType::GridNode_T * GridNode,
@@ -91,7 +88,7 @@ namespace GameEngineImpl::Scenes::PlayGame {
             const Grid::RenderableSize2D& RenderSize
         );
 
-        void SetPlayerPositionFromGridSize(Grid::RenderableSize2D GridSize, Grid::RenderableSize2D NodeSize);
+        void SetPlayerPositionFromCoordinates(Grid::RenderableCoordinates2D RenderCoordinates, Grid::RenderableSize2D NodeSize);
     };
 
 } // Scenes

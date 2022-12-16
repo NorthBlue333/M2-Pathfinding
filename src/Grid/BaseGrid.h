@@ -7,6 +7,8 @@
 
 namespace Grid {
     struct Coordinates2D {
+        Coordinates2D() = default;
+        Coordinates2D(int NewX, int NewY) : X(NewX), Y(NewY) {};
         int X = 0;
         int Y = 0;
     };
@@ -58,7 +60,7 @@ namespace Grid {
         std::vector<Coordinates2D> GetNeighborsCoordinates(GridNodeType& Node);
         virtual std::vector<Coordinates2D> GetNeighborsCoordinates(Coordinates2D& Coordinates) = 0;
 
-        GridNodeType* GetNodeAtCoordinates(Coordinates2D& Coordinates);
+        GridNodeType* GetNodeAtCoordinates(const Coordinates2D& Coordinates);
 
         std::vector<GridNodeType> const* GetNodes() const;
 

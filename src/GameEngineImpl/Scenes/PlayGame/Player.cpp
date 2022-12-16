@@ -27,4 +27,8 @@ namespace GameEngineImpl::Scenes::PlayGame {
     const Grid::Coordinates2D &Player::GetCoordinates() const {
         return m_Coordinates;
     }
+
+    void Player::SetCoordinates(const Grid::Coordinates2D &Coordinates) {
+        m_Coordinates = Coordinates;
+    }
 }

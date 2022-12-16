@@ -11,6 +11,11 @@ namespace GameEngineImpl::Scenes::PlayGame {
         delete m_GridNodeButton;
     }
 
+    template<typename GridNodeType, bool WithDiagonals>
+    bool GridDataHolder<GridNodeType, WithDiagonals>::IsBlocked() const {
+        return this->CurrentNodeType == GridImpl::NodeType::Empty;
+    }
+
     template <typename GridNodeType, bool WithDiagonals>
     typename GridDataHolder<GridNodeType, WithDiagonals>::GridNodeButtonType *GridDataHolder<GridNodeType, WithDiagonals>::GetGridNodeButton() const {
         return m_GridNodeButton;

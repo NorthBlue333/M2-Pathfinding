@@ -3,12 +3,24 @@
 
 #include "../GameEngine/BaseGame.h"
 #include "common_types.h"
+#include "../Grid/BaseGrid.h"
+#include "../GridImpl/GridsWithPortals.h"
 
 namespace GameEngineImpl {
+    struct LoadedGridDataHolder {
+        Grid::Coordinates2D Coordinates;
+        GridImpl::NodeType NodeType = GridImpl::NodeType::Empty;
+
+        Grid::Coordinates2D LinkedPortal;
+    };
+
     class Game : public GameEngine::BaseGame<Game, GameSceneName> {
+    public:
         using GameEngine::BaseGame<Game, GameSceneName>::BaseGame;
 
         // @todo add current level to load
+
+        std::vector<LoadedGridDataHolder> m_LoadedGridDataHolder;
     };
 
     using ISceneType = GameEngine::IScene<Game, GameSceneName>;

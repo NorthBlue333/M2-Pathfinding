@@ -4,7 +4,7 @@
 #include <iostream>
 
 namespace GameEngineImpl::Scenes::PlayGame {
-    PlayGameScene::PlayGameScene(Game *Game) : BaseScene(Game), m_Title(sf::Text()), m_BackButton(nullptr), m_Player(nullptr) {
+    PlayGameScene::PlayGameScene(Game *Game) : BaseScene(Game), m_BackButton(nullptr), m_Player(nullptr) {
 
     }
 
@@ -14,7 +14,6 @@ namespace GameEngineImpl::Scenes::PlayGame {
 
     void PlayGameScene::Render() {
         auto Window = m_Game->GetWindow();
-        Window->draw(m_Title);
         m_BackButton->Render(Window);
 
         if (m_CurrentGridType == PlayGameGridType::Square) {
@@ -59,11 +58,6 @@ namespace GameEngineImpl::Scenes::PlayGame {
     PlayGameScene::~PlayGameScene() {
         delete m_BackButton;
         delete m_Player;
-    }
-
-    void PlayGameScene::SetTitle(const sf::String &Text) {
-        m_Title = sf::Text(Text, *m_Fonts.at(PlayGameFont::AnekDevanagari), TITLE_TEXT_SIZE);
-        m_Title.setPosition(200, 30);
     }
 
     std::vector<UI::IButton*> PlayGameScene::GetButtons() {
@@ -142,11 +136,28 @@ namespace GameEngineImpl::Scenes::PlayGame {
                     return CreateSquareGridDataHolder(GridNode, RenderCoordinates, RenderSize);
                 }
             );
+
+            for (const auto & Data : m_Game->m_LoadedGridDataHolder) {
+                auto Node = m_Grid.SquareGrid->GetNodeAtCoordinates(Data.Coordinates);
+                Node->DataHolder->SetCurrentNodeType(Data.NodeType);
+                if (GridImpl::NodeType::Portal == Data.NodeType) {
+                    auto LinkedDataHolder = m_Grid.SquareGrid->GetNodeAtCoordinates(Data.LinkedPortal)->DataHolder;
+                    LinkedDataHolder->SetCurrentNodeType(Data.NodeType);
+                    Node->DataHolder->SetLinkedPortal(LinkedDataHolder);
+                }
+
+                if (Data.NodeType == GridImpl::NodeType::PlayerStart) {
+                    m_Player->SetCoordinates(Data.Coordinates);
+                }
+            }
             auto ContainerSize = m_Grid.SquareGrid->GetContainerSize();
-            SetPlayerPositionFromGridSize(
-                m_Grid.SquareGrid->GetGridRenderSize(ContainerSize),
-                m_Grid.SquareGrid->GetNodeRenderSize(ContainerSize)
+            auto NodeRenderSize = m_Grid.SquareGrid->GetNodeRenderSize(ContainerSize);
+            SetPlayerPositionFromCoordinates(
+                m_Grid.SquareGrid->GetNodeRenderCoordinates(m_Player->GetCoordinates(), NodeRenderSize),
+                NodeRenderSize
             );
+
+            m_Grid.SquareGrid->GenerateNeighbors();
         } else if (m_CurrentGridType == PlayGameGridType::Hexagonal) {
             m_Grid.HexagonalGrid = new HexagonalGridType(
                 GridWidth,
@@ -156,16 +167,33 @@ namespace GameEngineImpl::Scenes::PlayGame {
                     return CreateHexagonalGridDataHolder(GridNode, RenderCoordinates, RenderSize);
                 }
             );
+
+            for (const auto & Data : m_Game->m_LoadedGridDataHolder) {
+                auto Node = m_Grid.HexagonalGrid->GetNodeAtCoordinates(Data.Coordinates);
+                Node->DataHolder->SetCurrentNodeType(Data.NodeType);
+                if (GridImpl::NodeType::Portal == Data.NodeType) {
+                    auto LinkedDataHolder = m_Grid.HexagonalGrid->GetNodeAtCoordinates(Data.LinkedPortal)->DataHolder;
+                    LinkedDataHolder->SetCurrentNodeType(Data.NodeType);
+                    Node->DataHolder->SetLinkedPortal(LinkedDataHolder);
+                }
+
+                if (Data.NodeType == GridImpl::NodeType::PlayerStart) {
+                    m_Player->SetCoordinates(Data.Coordinates);
+                }
+            }
             auto ContainerSize = m_Grid.HexagonalGrid->GetContainerSize();
-            SetPlayerPositionFromGridSize(
-                m_Grid.HexagonalGrid->GetGridRenderSize(ContainerSize),
-                m_Grid.HexagonalGrid->GetNodeRenderSize(ContainerSize)
+            auto NodeRenderSize = m_Grid.HexagonalGrid->GetNodeRenderSize(ContainerSize);
+            SetPlayerPositionFromCoordinates(
+                m_Grid.HexagonalGrid->GetNodeRenderCoordinates(m_Player->GetCoordinates(), NodeRenderSize),
+                NodeRenderSize
             );
+
+            m_Grid.HexagonalGrid->GenerateNeighbors();
         }
     }
 
     void
-    PlayGameScene::SetPlayerPositionFromGridSize(Grid::RenderableSize2D GridSize, Grid::RenderableSize2D NodeSize) {
+    PlayGameScene::SetPlayerPositionFromCoordinates(Grid::RenderableCoordinates2D RenderCoordinates, Grid::RenderableSize2D NodeSize) {
         // @todo correct position from FillDataHolder
         auto Coordinates = m_Player->GetCoordinates();
 
@@ -175,7 +203,7 @@ namespace GameEngineImpl::Scenes::PlayGame {
             {0, 0, PlayerBounds.width, PlayerBounds.height}
         );
         m_Player->SetPosition(
-            BUTTON_MARGIN + (Coordinates.X * NodeSize.Width) + CenteredPos.x, 70 + (Coordinates.Y * NodeSize.Height) + CenteredPos.y
+            BUTTON_MARGIN + RenderCoordinates.X + CenteredPos.x, 70 + RenderCoordinates.Y + CenteredPos.y
         );
     }
 

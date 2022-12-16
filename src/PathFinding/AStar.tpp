@@ -42,7 +42,7 @@ namespace PathFinding {
 
             for (auto Neighbor : Current->Neighbors) {
                 auto AStarNode = &GetOrCreateAStartNodeInMap(AStarNodes, Neighbor);
-                if (!AStarNode->Visited)
+                if (!AStarNode->Visited && !this->IsNodeBlocked(Neighbor))
                 {
                     const bool b_diagonal = Neighbor->IsDiagonalFrom(Current);
                     const auto total_cost = CurrentAStarNode->G + (b_diagonal ? 14 : 10);

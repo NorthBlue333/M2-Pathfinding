@@ -70,7 +70,20 @@ namespace GameEngineImpl::Scenes::MainMenu {
         SetTitle("Main menu");
         // @todo temporary
 //        AddButton("Select level", [this](auto && Btn) { ChangeCurrentState(MainMenuState::LevelSelect); });
-        AddButton("Select level", [this](auto && Btn) { m_Game->LoadScene(GameSceneName::PlayGame); });
+        AddButton("Select level", [this](auto && Btn) {
+            m_Game->LoadScene(GameSceneName::PlayGame);
+            m_Game->m_LoadedGridDataHolder = {
+                {Grid::Coordinates2D{2, 6}, GridImpl::NodeType::PlayerStart},
+                {Grid::Coordinates2D{4, 8}, GridImpl::NodeType::Portal, {9, 13}},
+                {Grid::Coordinates2D{9, 13}, GridImpl::NodeType::Portal, {4, 8}},
+                {Grid::Coordinates2D{7, 4}, GridImpl::NodeType::Empty},
+                {Grid::Coordinates2D{8, 2}, GridImpl::NodeType::Empty},
+                {Grid::Coordinates2D{15, 15}, GridImpl::NodeType::Empty},
+                {Grid::Coordinates2D{21, 19}, GridImpl::NodeType::Empty},
+                {Grid::Coordinates2D{30, 10}, GridImpl::NodeType::Empty},
+                {Grid::Coordinates2D{18, 15}, GridImpl::NodeType::Empty}
+            };
+        });
         AddButton("Level editor", [this](auto && Btn) { m_Game->LoadScene(GameSceneName::LevelEditor); });
         AddButton("Quit", [this](auto && Btn) { m_Game->StopGame(); });
     }

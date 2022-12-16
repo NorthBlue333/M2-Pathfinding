@@ -40,7 +40,7 @@ namespace Grid {
 
     template<typename GridNodeType, template <typename NodeType, bool WD> typename DataHolderNodeType, bool WithDiagonals>
     GridNodeType *
-    BaseGrid<GridNodeType, DataHolderNodeType, WithDiagonals>::GetNodeAtCoordinates(Coordinates2D &Coordinates) {
+    BaseGrid<GridNodeType, DataHolderNodeType, WithDiagonals>::GetNodeAtCoordinates(const Coordinates2D &Coordinates) {
         return &m_Nodes[GetIndexFromCoordinates(Coordinates)];
     }
 
@@ -93,6 +93,9 @@ namespace Grid {
                     continue;
 
                 Node.Neighbors.push_back(&m_Nodes[GetIndexFromCoordinates(NeighborCoordinates)]);
+            }
+            for (auto & AdditionalNeighbor : Node.GetAdditionalNeighbors()) {
+                Node.Neighbors.push_back(AdditionalNeighbor);
             }
         }
     }

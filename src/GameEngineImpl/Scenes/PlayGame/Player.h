@@ -18,6 +18,7 @@ namespace GameEngineImpl::Scenes::PlayGame {
         sf::Rect<float> GetGlobalBounds() const;
         void SetPosition(float x, float y);
         sf::Vector2<float> GetPosition() const;
+        void SetCoordinates(const Grid::Coordinates2D& Coordinates);
         const Grid::Coordinates2D& GetCoordinates() const;
     private:
         Grid::Coordinates2D m_Coordinates;

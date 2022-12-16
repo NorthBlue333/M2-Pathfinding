@@ -11,6 +11,7 @@ namespace GameEngineImpl::Scenes::LevelEditor {
     void LevelEditorScene::Render() {
         auto Window = m_Game->GetWindow();
         m_BackButton->Render(Window);
+        m_SaveButton->Render(Window);
         for (auto &button : m_EditorButtons) {
             button->Render(Window);
         }
@@ -51,6 +52,10 @@ namespace GameEngineImpl::Scenes::LevelEditor {
         m_BackButton->SetPosition(10, 10);
         m_BackButton->SetOnClick([this](auto && Btn) { m_Game->LoadScene(GameSceneName::MainMenu); });
 
+        m_SaveButton = new UI::TextButton("Save game", *newFont);
+        m_SaveButton->SetPosition(m_SaveButton->GetPosition().x + 300, m_SaveButton->GetPosition().y + 10);
+        m_SaveButton->SetOnClick([this](auto && Btn) { Save_Utils.SaveGame(); });
+
         const auto WindowSize = m_Game->GetWindow()->getSize();
         auto hexaTypeButton = new UI::TextButton("HexaType", *newFont);
         // @todo compute position correctly maybe
@@ -67,6 +72,7 @@ namespace GameEngineImpl::Scenes::LevelEditor {
 
     LevelEditorScene::~LevelEditorScene() {
         delete m_BackButton;
+        delete m_SaveButton;
 
         for (auto & Btn : m_EditorButtons) {
             delete Btn;
@@ -90,6 +96,7 @@ namespace GameEngineImpl::Scenes::LevelEditor {
     std::vector<UI::IButton*> LevelEditorScene::GetButtons() {
         std::vector<UI::IButton*> buttons{m_EditorButtons};
         buttons.push_back(m_BackButton);
+        buttons.push_back(m_SaveButton);
         for (auto Btn : m_GridTypeButtons) {
             buttons.push_back(Btn);
         }

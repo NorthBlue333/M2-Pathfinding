@@ -16,6 +16,10 @@ namespace UI {
         sf::Rect<float> GetGlobalBounds() const override;
         void SetPosition(float x, float y) override;
         sf::Vector2<float> GetPosition() const override;
+        void DefaultOnHoverStart(IButton* Button) override;
+        void DefaultOnHoverEnd(IButton* Button) override;
+        void DefaultOnClick(IButton* Button) override;
+        void DefaultOnDragOver(IButton* Button) override;
     protected:
         std::string m_ContentText;
         sf::Text m_Text;

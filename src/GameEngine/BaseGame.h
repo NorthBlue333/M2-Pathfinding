@@ -16,8 +16,8 @@ namespace GameEngine {
         BaseGame(
             SceneNameEnum DefaultSceneName,
             SceneFactoryConstructor SceneFactoryConstructor,
-            unsigned int WindowWidth = 1200,
-            unsigned int WindowHeight = 1000,
+            unsigned int WindowWidth = static_cast<unsigned int>(sf::VideoMode::getDesktopMode().width/1.4),
+            unsigned int WindowHeight = static_cast<unsigned int>(sf::VideoMode::getDesktopMode().height/1.1),
             int FixedRateInMillis = 10
         );
         virtual ~BaseGame();

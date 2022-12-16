@@ -9,6 +9,7 @@
 #include "../Traits/HasFonts.h"
 #include "../../../UserInterface/SquareSpriteButton.h"
 #include "../../../GridImpl/GridsWithPortals.h"
+#include "../../../Utilities/SaveUtilities.h"
 #include "LevelEditorGameMode.h"
 #include "LevelEditorGameController.h"
 #include "common.h"
@@ -64,11 +65,13 @@ namespace GameEngineImpl::Scenes::LevelEditor {
 
         sf::Text Title;
         UI::TextButton* m_BackButton;
+        UI::TextButton* m_SaveButton{};
         std::vector<UI::TextButton*> m_GridTypeButtons;
         std::vector<UI::IButton*> m_EditorButtons;
 
         LevelEditorGridType m_CurrentGridType = LevelEditorGridType::Square;
         GridType m_Grid;
+        Utilities::SaveUtilities Save_Utils;
 
         void CreateGrid();
 

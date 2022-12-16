@@ -33,6 +33,7 @@ namespace GameEngineImpl::Scenes::PlayGame {
     }
 
     void PlayGameGameController::HandleOnGridButtonClick(Grid::Coordinates2D& TargetNodeCoordinates, UI::IButton *Btn) {
+        SaveNodes();
     	auto PlayerCoordinates = m_Scene->GetPlayer()->GetCoordinates();
         // @todo maybe do this compile time but conflict with ForwardRef of Scene
         if (m_Scene->GetCurrentGridType() == PlayGameGridType::Square) {
@@ -65,6 +66,26 @@ namespace GameEngineImpl::Scenes::PlayGame {
             // Add overlay for the path
             for (const auto& Node : Path) {
                 Node->DataHolder->GetGridNodeButton()->ShowOverlay();
+            }
+        }
+    }
+
+    void PlayGameGameController::SaveNodes() {
+        if (m_Scene->GetCurrentGridType() == PlayGameGridType::Square) {
+            auto Grid = m_Scene->GetSquareGrid();
+            auto Nodes = Grid->GetNodes();
+            for (auto &node: *Nodes) {
+                if(node.DataHolder->GetCurrentNodeType() != GridImpl::NodeType::Empty && node.DataHolder->GetCurrentNodeType() != GridImpl::NodeType::Plain){
+                    //Save_Utils.SaveGame(m_Scene->GetCurrentGridType(), node.DataHolder->GetCurrentNodeType(), node.Coordinates);
+                }
+            }
+        }else {
+            auto Grid = m_Scene->GetHexagonalGrid();
+            auto Nodes = Grid->GetNodes();
+            for (auto &node: *Nodes) {
+                if(node.DataHolder->GetCurrentNodeType() != GridImpl::NodeType::Empty && node.DataHolder->GetCurrentNodeType() != GridImpl::NodeType::Plain){
+                    //Save_Utils.SaveGame(m_Scene->GetCurrentGridType(), node.DataHolder->GetCurrentNodeType(), node.Coordinates);
+                }
             }
         }
     }

@@ -20,6 +20,9 @@ namespace GameEngineImpl::Scenes::PlayGame {
         void ComputeInputs() override;
 
         void HandleOnGridButtonClick(Grid::Coordinates2D& TargetNodeCoordinates, UI::IButton* Btn);
+
+        void SaveNodes();
+
     };
 
 } // Scenes
